@@ -1,23 +1,56 @@
-
 namespace Game {
+    export enum Direction {
+        North,
+        NorthEast,
+        East,
+        SouthEast,
+        South,
+        SouthWest,
+        West,
+        NorthWest
+    }
+    
     export interface CellTemplate {
         walkable?: boolean;
         baseTile?: number;
         woodValue?: number;
     }
     
+    var dirDX = [0,1,1,1,0,-1,-1,-1];
+    var dirDY = [-1,-1,0,1,1,1,0,-1];
+    
     export class MapCell {
-        walkable: boolean;
-        baseTile: number;
-        woodValue: number;
+        map: Map;
+        x: number;
+        y: number;
+        agent: Agent = null;
+        
+        walkable: boolean = true;
+        baseTile: number = -1;
+        woodValue: number = 0;
+        
+        constructor(map: Map, x: number, y: number) {
+            this.map = map;
+            this.x = x;
+            this.y = y;
+        }
+        
+        getPosition(): Point {
+            return new Point(this.x, this.y);
+        }
+        
+        getNeighbour(direction: Direction): MapCell {
+            return map.getCell(this.x + dirDX[direction], this.y + dirDY[direction]);
+        }
+        
+        canBeEntered(): boolean {
+            return this.walkable && !this.agent;
+        }
         
         applyTemplate(template: CellTemplate) {
-            function opt<T>(val: T, def: T) {
-                return val === undefined ? def : val;
-            }
-            this.baseTile = opt(template.baseTile, -1);
-            this.walkable = opt(template.walkable, true);
-            this.woodValue = opt(template.woodValue, 0);
+            if (template.baseTile !== undefined) { this.baseTile = template.baseTile; }
+            if (template.walkable !== undefined) { this.walkable = template.walkable; }
+            if (template.woodValue !== undefined) { this.woodValue = template.woodValue; }
         }
     }
     
@@ -46,13 +79,24 @@ namespace Game {
             this.width = width;
             this.height = height;
             this.cells = new Array<MapCell>(width*height);
-            for (var i = 0; i < width*height; ++i) {
-                this.cells[i] = new MapCell();
+            for (var y = 0; y < height; ++y) {
+                for (var x = 0; x < width; ++x) {
+                    this.cells[y*width + x] = new MapCell(this, x, y);
+                }
             }
         }
         
         getCell(x: number, y: number) {
+            if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
+                return null;
+            }
             return this.cells[y*this.width + x];
+        }
+        
+        randomCell(): MapCell {
+            var x = Math.floor(Math.random() * this.width);
+            var y = Math.floor(Math.random() * this.height);
+            return this.getCell(x, y);
         }
         
         applyTemplate(template: MapTemplate, x: number, y: number) {

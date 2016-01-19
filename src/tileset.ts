@@ -1,4 +1,3 @@
-
 namespace Game {
     export class Tileset {
         private images: HTMLImageElement[];
@@ -13,6 +12,7 @@ namespace Game {
                 'wall1.png',
                 'tree1.png',
                 'floor1.png',
+                'guy1.png',
             ];
             
             for (var i = 0; i < tiles.length; ++i) {
@@ -37,6 +37,10 @@ namespace Game {
         
         getTileImage(index: number): HTMLImageElement {
             return this.images[index];
+        }
+        
+        getTileImageByName(name: string): HTMLImageElement {
+            return this.images[this.indexes[name]];
         }
     }
 }

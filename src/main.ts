@@ -1,13 +1,8 @@
-/// <reference path="Map.ts"/>
-/// <reference path="Tileset.ts"/>
-/// <reference path="Globals.ts"/>
-
-
 namespace Game {
     var canvas = <HTMLCanvasElement>document.getElementById('canvas');
     var context = canvas.getContext('2d');
     
-    map = new Map(100, 100);
+    map = new Map(80, 50);
     tileset = new Tileset(onTilesLoaded);
 
     function onTilesLoaded() {
@@ -18,15 +13,20 @@ namespace Game {
     }
 
     function onKeyDown() {
-        generateMap();
+        updateWorld();
         drawCanvas(); 
     }
 
     function generateMap() {
-        var X = <CellTemplate>{baseTile: tileset.getTileIndex('wall1.png'), walkable: false};
-        var g = <CellTemplate>{baseTile: tileset.getTileIndex('grass1.png')};
-        var t = <CellTemplate>{baseTile: tileset.getTileIndex('tree1.png'), woodValue: 10};
-        var f = <CellTemplate>{baseTile: tileset.getTileIndex('floor1.png')};
+        function CT(baseTileName: string, template?: CellTemplate) {
+            template = template || {};
+            template.baseTile = tileset.getTileIndex(baseTileName);
+            return template;
+        }
+        var X = CT('wall1.png', {walkable: false});
+        var g = CT('grass1.png');
+        var t = CT('tree1.png', {woodValue: 10});
+        var f = CT('floor1.png');
         var o = <CellTemplate>{};
         
         for (var y = 0; y < map.height; ++y) {
@@ -54,8 +54,24 @@ namespace Game {
             g,g,g,t,f,f,t,g,g,g,
         ]);
         map.applyTemplate(houseTemplate, 30, 20);
+        
+        while (agents.length < 15) {
+            var cell = map.randomCell();
+            if (!cell.canBeEntered()) {
+                continue;
+            }
+            var agent = new Agent();
+            agent.moveTo(cell);
+            agent.currentBehavior = new RandomWalkBehavior();
+            agents.push(agent);
+        }
     }
 
+    function updateWorld() {
+        for (var i = 0; i < agents.length; ++i) {
+            agents[i].update();
+        }
+    }
 
     function resizeCanvas() {
         canvas.width = window.innerWidth;
@@ -70,10 +86,12 @@ namespace Game {
         for (var y = 0; y < map.height; ++y) {
             for (var x = 0; x < map.width; ++x) {
                 var cell = map.getCell(x, y);
-                if (cell.baseTile < 0) {
-                    continue;
+                if (cell.baseTile >= 0) {
+                    context.drawImage(tileset.getTileImage(cell.baseTile), x*TILE_DIM, y*TILE_DIM);
                 }
-                context.drawImage(tileset.getTileImage(cell.baseTile), x*TILE_DIM, y*TILE_DIM);
+                if (cell.agent) {
+                    context.drawImage(tileset.getTileImageByName('guy1.png'), x*TILE_DIM, y*TILE_DIM);
+                }
             }
         }
     }
