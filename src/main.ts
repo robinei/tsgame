@@ -100,6 +100,12 @@ namespace Game {
                 }
             }
         }
+        
+        var path = map.calcPath(agents[0].getPosition(), new Point(31, 21));
+        for (var i = 0; i < path.length; ++i) {
+            var p = path[i];
+            context.drawImage(tileset.getTileImageByName('wall1.png'), p.x*TILE_DIM, p.y*TILE_DIM);
+        }
     }
 }
 

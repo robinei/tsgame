@@ -30,6 +30,10 @@ namespace Game {
         cell: MapCell = null;
         currentBehavior: Behavior = null;
         
+        getPosition(): Point {
+            return this.cell.getPosition();
+        }
+        
         removeFromMap() {
             if (this.cell) {
                 if (this.cell.agent !== this) {

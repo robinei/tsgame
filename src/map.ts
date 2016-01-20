@@ -36,6 +36,10 @@ namespace Game {
             return new Point(this.x, this.y);
         }
         
+        getIndex(): number {
+            return this.y * this.map.width + this.x;
+        }
+        
         getNeighbour(direction: Direction): MapCell {
             return this.map.getCell(this.x + dirDX[direction], this.y + dirDY[direction]);
         }
@@ -91,6 +95,8 @@ namespace Game {
         height: number;
         cells: MapCell[];
         
+        private calcNeigh: (node: number, result: Array<number>) => number;
+        
         constructor(width: number, height: number) {
             this.width = width;
             this.height = height;
@@ -100,6 +106,15 @@ namespace Game {
                     this.cells[y*width + x] = new MapCell(this, x, y);
                 }
             }
+            this.calcNeigh = makeNeighbourCalc(width, height);
+        }
+        
+        indexForPoint(p: Point): number {
+            return p.y * this.width + p.x;
+        }
+        
+        pointForIndex(index: number): Point {
+            return new Point(index % this.width, Math.floor(index / this.width));
         }
         
         getCell(x: number, y: number) {
@@ -128,6 +143,34 @@ namespace Game {
             if (cell !== null) {
                 cell.applyTemplate(template);
             }
+        }
+        
+        private makeDistanceCalc() {
+            var map = this;
+            return function(a: number, b: number): number {
+                var cell1 = map.cells[b];
+                if (!cell1.walkable) { // TODO(robin): use canBeEntered instead?
+                    return Number.MAX_VALUE;
+                }
+                var cell0 = map.cells[a];
+                var dx = cell1.x - cell0.x;
+                var dy = cell1.y - cell0.y;
+                return dx*dx + dy*dy; // don't bother with sqrt since we dont use the distances for other than comparison
+            };
+        }
+        
+        calcPath(start: Point, goal: Point): Array<Point> {
+            var startIndex = this.indexForPoint(start);
+            var goalIndex = this.indexForPoint(goal);
+            var pathIndexes = calcPath(this.width * this.height, startIndex, goalIndex, this.makeDistanceCalc(), this.calcNeigh);
+            if (pathIndexes == null) {
+                return null;
+            }
+            var path = new Array<Point>();
+            for (var i = 0; i < pathIndexes.length; ++i) {
+                path.push(this.pointForIndex(pathIndexes[i]));
+            }
+            return path;
         }
     }
     
