@@ -22,9 +22,9 @@ namespace Game {
         y: number;
         agent: Agent = null;
         
-        walkable: boolean = true;
-        baseTile: number = -1;
-        woodValue: number = 0;
+        walkable: boolean;
+        baseTile: number;
+        woodValue: number;
         
         constructor(map: Map, x: number, y: number) {
             this.map = map;
@@ -67,7 +67,14 @@ namespace Game {
             return this.walkable && !this.agent;
         }
         
+        applyDefaultTemplate() {
+            this.walkable = true;
+            this.baseTile = -1;
+            this.woodValue = 0;
+        }
+        
         applyTemplate(template: CellTemplate) {
+            this.applyDefaultTemplate();
             if (template.baseTile !== undefined) { this.baseTile = template.baseTile; }
             if (template.walkable !== undefined) { this.walkable = template.walkable; }
             if (template.woodValue !== undefined) { this.woodValue = template.woodValue; }

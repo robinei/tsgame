@@ -25,7 +25,7 @@ namespace Game {
         }
         var X = CT('wall1.png', {walkable: false});
         var g = CT('grass1.png');
-        var t = CT('tree1.png', {woodValue: 10});
+        var t = CT('grass1.png', {woodValue: 10});
         var f = CT('floor1.png');
         var o = <CellTemplate>{};
         
@@ -95,6 +95,9 @@ namespace Game {
                 if (cell.baseTile >= 0) {
                     context.drawImage(tileset.getTileImage(cell.baseTile), x*TILE_DIM, y*TILE_DIM);
                 }
+                if (cell.woodValue > 0) {
+                    context.drawImage(tileset.getTileImageByName('tree1.png'), x*TILE_DIM, y*TILE_DIM);
+                }
                 if (cell.agent) {
                     context.drawImage(tileset.getTileImageByName('guy1.png'), x*TILE_DIM, y*TILE_DIM);
                 }
@@ -104,7 +107,8 @@ namespace Game {
         var path = map.calcPath(agents[0].getPosition(), new Point(31, 21));
         for (var i = 0; i < path.length; ++i) {
             var p = path[i];
-            context.drawImage(tileset.getTileImageByName('wall1.png'), p.x*TILE_DIM, p.y*TILE_DIM);
+            context.fillStyle = "rgba(255, 255, 255, 0.1)";
+            context.fillRect(p.x*TILE_DIM, p.y*TILE_DIM, TILE_DIM, TILE_DIM);
         }
     }
 }
