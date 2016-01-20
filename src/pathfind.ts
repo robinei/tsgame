@@ -15,6 +15,10 @@ namespace Game {
             };
             this.set_index = set_index;
         }
+        
+        getArray(): Array<Value> {
+            return this.heap;
+        }
 
         private swap(i: number, j: number) {
             var temp = this.heap[i];
@@ -88,7 +92,7 @@ namespace Game {
     
     // construct a path from node "start" to node "curr",
     // given an array "parents" which contains the node from which each node was reached during the search
-    function construct_path(start: Node, curr: Node, parents: Array<Node>): Array<Node> {
+    export function constructPath(start: Node, curr: Node, parents: Array<Node>): Array<Node> {
         var result: Array<Node> = [];
         while (true) {
             result.push(curr);
@@ -139,7 +143,7 @@ namespace Game {
         while (heap.count() > 0) {
             var curr = heap.pop();
             if (curr === goal) {
-                return construct_path(start, curr, parents);
+                return constructPath(start, curr, parents);
             }
 
             visited[curr] = true;
