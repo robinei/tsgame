@@ -16,9 +16,6 @@ namespace Game {
         woodValue?: number;
     }
     
-    var dirDX = [0,1,1,1,0,-1,-1,-1];
-    var dirDY = [-1,-1,0,1,1,1,0,-1];
-    
     export class MapCell {
         map: Map;
         x: number;
@@ -40,7 +37,26 @@ namespace Game {
         }
         
         getNeighbour(direction: Direction): MapCell {
-            return map.getCell(this.x + dirDX[direction], this.y + dirDY[direction]);
+            return this.map.getCell(this.x + dirDX[direction], this.y + dirDY[direction]);
+        }
+        
+        forNeighbours(radius: number, func: (MapCell) => boolean) {
+            if (radius > maxAreaRadius) {
+                throw "too big radius";
+            }
+            for (var i = 0; i < areaPositionsByDistance.length; ++i) {
+                var pos = areaPositionsByDistance[i];
+                if (pos.distance > radius) {
+                    break;
+                }
+                var cell = this.map.getCell(this.x + pos.x, this.y + pos.y);
+                if (!cell) {
+                    continue;
+                }
+                if (!func(cell)) {
+                    break;
+                }
+            }
         }
         
         canBeEntered(): boolean {
@@ -114,4 +130,35 @@ namespace Game {
             }
         }
     }
+    
+    
+    
+    
+    var dirDX = [0,1,1,1,0,-1,-1,-1];
+    var dirDY = [-1,-1,0,1,1,1,0,-1];
+    
+    
+    interface AreaPos {
+        x: number;
+        y: number;
+        distance: number;
+    }
+    
+    var areaPositionsByDistance: AreaPos[] = [];
+    var maxAreaRadius = 32;
+    
+    for (var y = -maxAreaRadius; y <= maxAreaRadius; ++y) {
+        for (var x = -maxAreaRadius; x <= maxAreaRadius; ++x) {
+            var cx = x + 0.5;
+            var cy = y + 0.5;
+            areaPositionsByDistance.push({
+                x: x,
+                y: y,
+                distance: Math.sqrt(cx*cx + cy*cy)
+            });
+        }
+    }
+    areaPositionsByDistance.sort(function(a: AreaPos, b: AreaPos) {
+        return a.distance - b.distance;
+    });
 }

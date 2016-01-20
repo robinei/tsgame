@@ -66,6 +66,11 @@ namespace Game {
             agent.currentBehavior = new RandomWalkBehavior();
             agents.push(agent);
         }
+        
+        map.getCell(40, 40).forNeighbours(5, function(cell: MapCell) {
+            cell.baseTile = t.baseTile;
+            return true;
+        });
     }
 
     function updateWorld() {
