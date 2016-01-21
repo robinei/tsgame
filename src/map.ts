@@ -38,12 +38,17 @@ namespace Game {
         woodValue: number;
         seen: boolean;
         
+        inventory = new Array<InventoryItem>();
+        
         constructor(map: Map, x: number, y: number) {
             this.map = map;
             this.x = x;
             this.y = y;
         }
         
+        putItem(item: InventoryItem){
+            this.inventory.push(item)
+        }
         getPosition(): Point {
             return new Point(this.x, this.y);
         }

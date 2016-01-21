@@ -6,6 +6,8 @@ namespace Game {
     tileset = new Tileset(onTilesLoaded);
     
     var mapDrawer = new MapDrawer(map, tileset);
+    
+    storageCell = map.getCell(20, 20)
 
     function onTilesLoaded() {
         window.onresize = resizeCanvas;
@@ -111,7 +113,7 @@ namespace Game {
         ]);
         map.applyTemplate(houseTemplate, 30, 20);
         
-        while (agents.length < 15) {
+        while (agents.length < 1 ){
             var cell = map.randomCell();
             if (!cell.canBeEntered()) {
                 continue;
