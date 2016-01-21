@@ -83,7 +83,7 @@ namespace Game {
         }
         var X = CT('wall1.png', {walkable: false});
         var g = CT('grass1.png', {seen: false});
-        var t = CT('grass1.png', {doodadFactory: () => { return new Tree(tileset); }});
+        var t = CT('grass1.png', {doodadFactory: () => { return new Tree(); }});
         var f = CT('floor1.png');
         var o = <CellTemplate>{};
         
@@ -113,7 +113,7 @@ namespace Game {
         ]);
         map.applyTemplate(houseTemplate, 30, 20);
         
-        while (agents.length < 20 ){
+        while (agents.length < 20 ) {
             var cell = map.randomCell();
             if (!cell.canBeEntered()) {
                 continue;

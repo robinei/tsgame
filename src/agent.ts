@@ -176,7 +176,7 @@ namespace Game {
             return weight
         }
         
-        removeNextOfType(itemType: InventoryItemType){
+        removeNextOfType(itemType: InventoryItemType): InventoryItem {
             var foundItem;
             
             for (var i = 0; i < this.inventory.length; ++i){
