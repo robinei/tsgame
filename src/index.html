@@ -5,14 +5,27 @@
 body, html {
     overflow: hidden;
     margin: 0px;
+    position: absolute;
+}
+#infoview {
+    background-color: white;
+    opacity: 0.5;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 200px;
+    height: 100px;
+    z-index: 10;
 }
 </style>
 </head>
 
 <body id="body">
 <canvas id="canvas"></canvas>
+<div id="infoview"></div>
 
 <script src="globals.js"></script>
+<script src="util.js"></script>
 <script src="math.js"></script>
 <script src="agent.js"></script>
 <script src="map.js"></script>

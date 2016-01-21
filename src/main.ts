@@ -28,6 +28,18 @@ namespace Game {
         }
         mapDrawer.cursorCell = cell;
         drawCanvas();
+        
+        var infoview = document.getElementById("infoview");
+        while (infoview.hasChildNodes()) {
+            infoview.removeChild(infoview.firstChild);
+        }
+        if (cell && cell.agent) {
+            var agent = cell.agent;
+            var behavior = agent.currentBehavior;
+            if (behavior) {
+                infoview.appendChild(document.createTextNode("Behavior: " + getObjectName(behavior)));
+            }
+        }
     }
 
     function generateMap() {
