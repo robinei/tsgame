@@ -144,6 +144,10 @@ namespace Game {
                 var point = this.path[this.currentStep++]
                 agent.moveTo(map.getCell(point.x, point.y))
             } else if (this.tree.woodValue > 0) {
+                if (!agent.tryAddInventoryItem(new Wood())){
+                    return
+                }
+
                 this.tree.woodValue--;
             } else {
                 this.reset()
@@ -162,13 +166,32 @@ namespace Game {
             }
         }
     }
-    
+
+    enum InventoryItemType{
+        Material,
+        Food,
+        Weapon,
+        Tool
+    }
+
+    export interface InventoryItem {
+        weight: number;
+        type: InventoryItemType;
+    }
+
+    export class Wood implements InventoryItem{
+        weight = 1
+        type = InventoryItemType.Material
+    }
 
     export class Agent {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
         motionSpeed: number = 1;
-        motionPoints: number = 0;
-        
+        motionPoints: number = 1;
+        carryCapacity: number = 20;
+
+        inventory = new Array<InventoryItem>();
+
         cell: MapCell = null;
         currentBehavior: Behavior = null;
         behaviors: Array<Behavior> = [];
@@ -221,7 +244,12 @@ namespace Game {
         }
         
         canMoveNow(): boolean {
-            return this.motionPoints >= 1;
+            if (this.motionPoints >= 1){
+                this.motionPoints = 0
+                return true
+            }
+
+            return false              
         }
         
         moveTo(cell: MapCell) {
@@ -234,7 +262,6 @@ namespace Game {
             this.removeFromMap();
             this.cell = cell;
             cell.agent = this;
-            this.motionPoints -= 1;
             if (this.motionPoints < 0) {
                 this.motionPoints = 0;
             }
@@ -245,7 +272,7 @@ namespace Game {
         }
         
         update() {
-            this.motionPoints += this.motionSpeed;
+            this.motionPoints += this.motionSpeed * this.calcStaminaRegain();
             
             this.evaluateNeeds();
             this.chooseBehavior();
@@ -253,6 +280,7 @@ namespace Game {
             if (this.currentBehavior) {
                 this.currentBehavior.update(this);
             }
+            
             if (this.motionPoints > 1) {
                 this.motionPoints = 1;
             }
@@ -275,6 +303,40 @@ namespace Game {
                     return false;
                 }) ;
             return personCount;
+	}
+
+        getTotalInventoryWeight()
+        {
+            var weight = 0
+            this.inventory.forEach(element => {
+                weight += element.weight
+            });
+            
+            return weight
+        }
+        
+        tryAddInventoryItem(item: InventoryItem){
+            if ( this.getTotalInventoryWeight() + item.weight > this.carryCapacity){
+                return false
+            }
+            
+            this.inventory.push(item)
+            return true
+        }
+            
+        
+        calcStaminaRegain(){
+            var totalWeight = this.getTotalInventoryWeight()
+            
+            var factor = ( this.carryCapacity - totalWeight) / this.carryCapacity
+            
+            if (factor > 1)
+                factor = 1
+                
+            if (factor < 0.15 )
+                factor = 0.15
+            
+            return factor
         }
     }
 }

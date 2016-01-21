@@ -107,6 +107,7 @@ namespace Game {
                 continue;
             }
             var agent = new Agent(cell);
+            agent.motionSpeed = Math.random() * 0.8 + 0.2;
             agents.push(agent);
         }
         
