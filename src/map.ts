@@ -175,7 +175,7 @@ namespace Game {
             return function(a: number, b: number): number {
                 var cell1 = map.cells[b];
                 
-                if (!free ? cell1.canBeEntered() : cell1.walkable) {
+                if (!(free ? cell1.canBeEntered() : cell1.walkable)) {
                     return Number.MAX_VALUE;
                 }
                 var cell0 = map.cells[a];
