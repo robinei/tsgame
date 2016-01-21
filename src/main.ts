@@ -33,7 +33,7 @@ namespace Game {
             ++mapDrawer.corner.x;
         } else if (e.keyCode == 40) { // down
             ++mapDrawer.corner.y;
-        } else {
+        } else if (e.keyCode == 32) { // space
             updateWorld();
         }
         drawCanvas();
