@@ -170,11 +170,12 @@ namespace Game {
             }
         }
         
-        private makeDistanceCalc() {
+        private makeDistanceCalc(free: boolean) {
             var map = this;
             return function(a: number, b: number): number {
                 var cell1 = map.cells[b];
-                if (!cell1.walkable) { // TODO(robin): use canBeEntered instead?
+                
+                if (!free ? cell1.canBeEntered() : cell1.walkable) {
                     return Number.MAX_VALUE;
                 }
                 var cell0 = map.cells[a];
@@ -184,10 +185,10 @@ namespace Game {
             };
         }
         
-        calcPath(start: Point, goal: Point): Array<Point> {
+        calcPath(start: Point, goal: Point, free: boolean): Array<Point> {
             var startIndex = this.indexForPoint(start);
             var goalIndex = this.indexForPoint(goal);
-            var pathIndexes = calcPath(this.width * this.height, startIndex, goalIndex, this.makeDistanceCalc(), this.calcNeigh);
+            var pathIndexes = calcPath(this.width * this.height, startIndex, goalIndex, this.makeDistanceCalc(free), this.calcNeigh);
             if (pathIndexes == null) {
                 return null;
             }

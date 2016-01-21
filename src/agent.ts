@@ -1,9 +1,16 @@
 namespace Game {
-    export interface Behavior {
-        update(agent: Agent);
+    export class Behavior {
+        urgency(agent: Agent):number {return 1};
+        
+        update(agent: Agent) {}
     }
     
-    export class RandomWalkBehavior implements Behavior {
+    export class RandomWalkBehavior extends Behavior {
+        
+        urgency(agent: Agent):number {
+            return agent.stressed;
+        }
+        
         update(agent: Agent) {
             if (!agent.cell) {
                 return;
@@ -19,33 +26,56 @@ namespace Game {
                     break;
                 }
             }
+            agent.restless++;
+            agent.stressed = Math.max(0, agent.stressed-2);
         }
     }
     
-    export class FollowWalkBehavior implements Behavior {
+    export class FollowWalkBehavior extends Behavior {
         target: Agent = null;
         path: Array<Point> = null;
         pathIndex: number = 1;
+        
+        urgency(agent: Agent):number {
+            return agent.social;
+        }
+        
         update(agent: Agent) {
             if (!agent.cell || !agent.canMoveNow()) {
                 return;
             }
+            this.pickTarget(agent);
+            
+            var cell = this.findPath(agent.getPosition(), 0);
+            if(cell) {
+                agent.moveTo(cell);
+                this.pathIndex++;
+            }
+            
+            if(agent.getPosition().distanceTo(this.target.getPosition()) <= Distance.Close) {
+                this.reset();
+            }
+        }
+        
+        pickTarget(agent: Agent) {
             while(this.target == null || this.target === agent) {
                 var index = Math.floor(Math.random()*agents.length);
                 this.target = agents[index];
             }
+        }
+        
+        findPath(point: Point, attempts: number):MapCell {
             if(this.path == null || this.pathIndex > Distance.Close) {
-                this.path = map.calcPath(agent.getPosition(), this.target.getPosition());
+                this.path = map.calcPath(point, this.target.getPosition(), false);
                 this.pathIndex = 1;
             }
+            
             var cell = map.getCellForPoint(this.path[this.pathIndex])
-            if(cell && cell.canBeEntered()) {
-                agent.moveTo(cell);
-                this.pathIndex++;
+            if(!(cell && cell.canBeEntered()) && attempts < 5) {
+                cell = null;
+                this.findPath(point, attempts+1);
             }
-            if(agent.getPosition().distanceTo(this.target.getPosition()) <= Distance.Close) {
-                this.reset();
-            }
+            return cell;
         }
         
         reset() {
@@ -55,7 +85,7 @@ namespace Game {
         }
     }
     
-    export class ChopWoodBehavior implements Behavior {
+    export class ChopWoodBehavior extends Behavior {
         path: Array<Point>;
         tree: MapCell;
         currentStep = 1;
@@ -74,7 +104,7 @@ namespace Game {
                  return false
              }
 
-            this.path = map.calcPath(agent.cell.getPosition(), this.tree.getPosition())
+            this.path = map.calcPath(agent.cell.getPosition(), this.tree.getPosition(), false)
 
             return true
         }
@@ -92,6 +122,10 @@ namespace Game {
              return tree
         }
 
+        urgency(agent: Agent):number {
+            return agent.restless;
+        }
+        
         update(agent: Agent) {
             if (!agent.cell) {
                 return;
@@ -114,7 +148,7 @@ namespace Game {
             } else {
                 this.reset()
             }
-
+            agent.restless  = Math.max(0, agent.restless-1);
         }
 
         walkRandomly(agent: Agent){
@@ -128,6 +162,7 @@ namespace Game {
             }
         }
     }
+    
 
     export class Agent {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
@@ -136,26 +171,36 @@ namespace Game {
         
         cell: MapCell = null;
         currentBehavior: Behavior = null;
-        behaviors: Array<Behavior> = null;
-        priorities: Array<number> = null;
+        behaviors: Array<Behavior> = [];
+        
+        social:number = 0;
+        restless:number = 0;
+        stressed:number = 0;
+        
         
         constructor(cell: MapCell){
             this.motionSpeed = Math.random() * 0.8 + 0.2;
-            this.behaviors = [new RandomWalkBehavior(), new FollowWalkBehavior()];
-            this.priorities = [0.5, 0.5];
-            
+            this.behaviors = [new RandomWalkBehavior(), new FollowWalkBehavior(), new ChopWoodBehavior()];
             this.moveTo(cell);
             this.chooseBehavior();
         }
         
         chooseBehavior() {
-            var sum = this.priorities.reduce(function(previousValue, currentValue):number{return previousValue+currentValue});
-            var weights = this.priorities.map(function(value):number{return value / sum});
+            var sum = 0;
+            
+            for (var i=0; i<this.behaviors.length; i++) {
+                sum += this.behaviors[i].urgency(this);
+            }
+            
+            var weights = this.behaviors.map(
+                function(behavior):number {
+                    return behavior.urgency(this) / sum;
+                });
             var value = Math.random();
-            var index = 0;
+            var index = -1;
             while(value >= 0 && index < weights.length){
-                value -= weights[index];
                 index++;
+                value -= weights[index];
             } 
              
             this.currentBehavior = this.behaviors[index];
@@ -201,6 +246,10 @@ namespace Game {
         
         update() {
             this.motionPoints += this.motionSpeed;
+            
+            this.evaluateNeeds();
+            this.chooseBehavior();
+            
             if (this.currentBehavior) {
                 this.currentBehavior.update(this);
             }
@@ -209,6 +258,23 @@ namespace Game {
             }
         }
         
+        evaluateNeeds(){    
+            this.social ++;                 
+            this.social = Math.max(0, this.social - (this.countPeople(this.cell, Distance.Close)/2));
+            this.stressed += this.countPeople(this.cell, Distance.Adjacent);
+        }
         
+        countPeople(cell: MapCell, range: Distance):number {
+            var personCount = 0;
+            cell.forNeighbours(range,
+                (cell: MapCell) => {
+                    if(cell.agent) {
+                        personCount++;
+                        return true;
+                    }
+                    return false;
+                }) ;
+            return personCount;
+        }
     }
 }

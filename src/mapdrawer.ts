@@ -33,7 +33,7 @@ namespace Game {
                 context.fillRect(pos.x, pos.y, TILE_DIM, TILE_DIM);
             }
             
-            var path = this.map.calcPath(agents[0].getPosition(), new Point(31, 21));
+            var path = this.map.calcPath(agents[0].getPosition(), new Point(31, 21), false);
             for (var i = 0; i < path.length; ++i) {
                 var pos = this.clientCoordForMapCoord(path[i].x, path[i].y);
                 context.fillStyle = "rgba(255, 255, 255, 0.1)";
