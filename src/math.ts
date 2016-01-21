@@ -7,6 +7,13 @@ namespace Game {
             this.x = x;
             this.y = y;
         }
+        
+        equals(p: Point): boolean {
+            if (!p) {
+                return false;
+            }
+            return this.x === p.x && this.y === p.y;
+        }
 
         distanceTo(p: Point) {
             var dx = this.x - p.x;

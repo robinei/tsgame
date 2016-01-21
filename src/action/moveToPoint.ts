@@ -1,20 +1,29 @@
 namespace Game {
     export class MoveToPointAction extends Action {
         agent: Agent;
-        target: Point;
-        path: Array<Point> = null;
-        pathIndex: number = 1;
         wantedDistance: Distance;
         
-        constructor(agent: Agent, target: Point, wantedDistance?: Distance) {
+        target: Point = null;
+        path: Array<Point> = null;
+        pathIndex: number = 1;
+        
+        constructor(agent: Agent, wantedDistance?: Distance) {
             super();
-            this.wantedDistance = valueOrDefault(wantedDistance, Distance.Close);
             this.agent = agent;
+            this.wantedDistance = valueOrDefault(wantedDistance, Distance.Close);
+        }
+        
+        setTarget(target: Point) {
+            if (target && target.equals(this.target)) {
+                return;
+            }
             this.target = target;
+            this.path = null;
+            this.pathIndex = 1;
         }
         
         isDone(): boolean {
-            return this.agent.getPosition().distanceTo(this.target) <= this.wantedDistance;
+            return !this.target || this.agent.getPosition().distanceTo(this.target) <= this.wantedDistance;
         }
         
         step() {
@@ -38,7 +47,7 @@ namespace Game {
                 this.path = map.calcPath(point, this.target, false);
                 this.pathIndex = 1;
             }
-            if (this.path == null) {
+            if (this.path == null || this.pathIndex >= this.path.length) {
                 return null;
             }
             return map.getCellForPoint(this.path[this.pathIndex])

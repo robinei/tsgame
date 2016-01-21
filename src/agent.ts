@@ -112,6 +112,10 @@ namespace Game {
                 throw "cell already has agent";
             }
             if (this.cell) {
+                var dist = cell.getPosition().distanceTo(this.cell.getPosition());
+                if (dist > 1.5) {
+                    throw "moved more than one cell";
+                }
                 this.direction = cell.getPosition().sub(this.getPosition()).direction();
             }
             this.removeFromMap();

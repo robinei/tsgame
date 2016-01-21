@@ -11,6 +11,9 @@ namespace Game {
             if (!this.agent.cell || !this.agent.canMoveNow()) {
                 return;
             }
+            if (!this.moveAction) {
+                this.moveAction = new MoveToPointAction(this.agent);
+            }
             this.pickTarget();
             this.doMove();
             this.agent.restless++;
@@ -20,13 +23,11 @@ namespace Game {
             while(this.target == null || this.target === this.agent) {
                 var index = Math.floor(Math.random()*agents.length);
                 this.target = agents[index];
+                this.moveAction.setTarget(this.target.getPosition());
             }
         }
         
         doMove() {
-            if (!this.moveAction) {
-                this.moveAction = new MoveToPointAction(this.agent, this.target.getPosition());
-            }
             if (!this.moveAction.step()) {
                 this.reset();
             }
@@ -34,7 +35,7 @@ namespace Game {
         
         reset() {
             this.target = null;
-            this.moveAction = null;
+            this.moveAction.setTarget(null);
         }
     }
 }
