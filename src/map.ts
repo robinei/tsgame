@@ -9,7 +9,7 @@ namespace Game {
         West,
         NorthWest
     }
-    
+
     export enum Distance {
         Adjacent = 1,
         Close = 2,
@@ -203,8 +203,8 @@ namespace Game {
     
     
     
-    var dirDX = [0,1,1,1,0,-1,-1,-1];
-    var dirDY = [-1,-1,0,1,1,1,0,-1];
+    export var dirDX = [0,1,1,1,0,-1,-1,-1];
+    export var dirDY = [-1,-1,0,1,1,1,0,-1];
     
     
     interface AreaPos {

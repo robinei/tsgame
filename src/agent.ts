@@ -33,6 +33,7 @@ namespace Game {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
         motionSpeed: number = 1;
         motionPoints: number = 1;
+        direction: Direction = Direction.North;
         carryCapacity: number = 20;
 
         inventory = new Array<InventoryItem>();
@@ -82,7 +83,7 @@ namespace Game {
         getPosition(): Point {
             return this.cell.getPosition();
         }
-        
+
         removeFromMap() {
             if (this.cell) {
                 if (this.cell.agent !== this) {
@@ -92,7 +93,7 @@ namespace Game {
                 this.cell = null;
             }
         }
-        
+
         canMoveNow(): boolean {
             if (this.motionPoints >= 1){
                 this.motionPoints = 0
@@ -101,7 +102,7 @@ namespace Game {
 
             return false              
         }
-        
+
         moveTo(cell: MapCell) {
             if (cell.agent) {
                 if (cell.agent === this) {
@@ -109,6 +110,7 @@ namespace Game {
                 }
                 throw "cell already has agent";
             }
+            this.direction = cell.getPosition().sub(this.getPosition()).direction();
             this.removeFromMap();
             this.cell = cell;
             cell.agent = this;
