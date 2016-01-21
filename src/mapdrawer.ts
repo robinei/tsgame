@@ -56,7 +56,7 @@ namespace Game {
                     }
                     
                     var cell = this.map.getCell(x + this.corner.x, y + this.corner.y);
-                    if (!cell) {
+                    if (!cell || !cell.seen) {
                         continue;
                     }
                     if (cell.baseTile >= 0) {
