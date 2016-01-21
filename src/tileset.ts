@@ -13,6 +13,13 @@ namespace Game {
                 'tree1.png',
                 'floor1.png',
                 'guy1.png',
+                'guy2f.png',
+                'guy2r.png',
+                'guy2b.png',
+                'guy2l.png',
+                'wonkey.png',
+                'turtllama.png',
+                'bird.png',
             ];
             
             for (var i = 0; i < tiles.length; ++i) {

@@ -67,6 +67,8 @@ namespace Game {
             infoview.appendChild(document.createTextNode("Restless: " + agent.restless));
             infoview.appendChild(document.createElement("br"));
             infoview.appendChild(document.createTextNode("Stressed: " + agent.stressed));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode("Direction: " + agent.direction));
         }
         infoview.style.visibility = visible ? "visible" : "hidden";
     }

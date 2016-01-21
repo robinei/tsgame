@@ -66,7 +66,23 @@ namespace Game {
                         context.drawImage(this.tileset.getTileImageByName('tree1.png'), clientX, clientY);
                     }
                     if (cell.agent) {
-                        context.drawImage(this.tileset.getTileImageByName('guy1.png'), clientX, clientY);
+                        var source = '';
+                        switch (cell.agent.direction){
+                            case Direction.North:
+                            case Direction.NorthEast:
+                                source = 'guy2b.png';break;
+                            case Direction.East:
+                            case Direction.SouthEast:
+                                source = 'guy2l.png';break;
+                            case Direction.South:
+                            case Direction.SouthWest:
+                                source = 'guy2f.png';break;
+                            case Direction.West:
+                            case Direction.NorthWest:
+                                source = 'guy2r.png';break; 
+                        }
+                        
+                        context.drawImage(this.tileset.getTileImageByName(source), clientX, clientY);
                         context.fillStyle = "rgba(240, 240, 240, 1.0)"
                         context.font="9px Arial";                        
                         var agentName = cell.agent.name;
