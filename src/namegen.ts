@@ -44,4 +44,85 @@ namespace Game {
         }
         return capitalizeFirstLetter(name);
     }
+    
+    class advancedNameGen {
+        consonantSequenceLeading(input:string):string{
+            switch(input){
+                case 'b': return 'hjlrw';
+                case 'c': return 'hlr';
+                case 'd': return 'hjrvw';
+                case 'f': return 'hjlnr';
+                case 'g': return 'hjlnr';
+                case 'h': return 'jlrv';
+                case 'j': return '';
+                case 'k': return 'jlnrv';
+                case 'l': return 'jlw';
+                case 'm': return '';
+                case 'n': return '';
+                case 'p': return 'fhjlnrsz';
+                case 'q': return 'wl';
+                case 'r': return 'j';
+                case 's': return 'chjklmnpqtvwz';
+                case 't': return 'hjrsvw';
+                case 'v': return 'r';
+                case 'w': return 'hr';
+                case 'x': return 'c';
+                case 'z': return 'h';
+                default: return '';
+            }
+        } 
+        consonantSequenceAfterVowel(input:string):string{
+            switch(input){
+                case 'b': return 'bdhjlr';
+                case 'c': return 'chlkr';
+                case 'd': return 'dhjrw';
+                case 'f': return 'fhjlnr';
+                case 'g': return 'hjglnr';
+                case 'h': return 'jlrv';
+                case 'j': return '';
+                case 'k': return 'jklnrv';
+                case 'l': return 'bcdfghjlkmnpqstvw';
+                case 'm': return 'm';
+                case 'n': return 'n';
+                case 'p': return 'fhjlnrsz';
+                case 'q': return '';
+                case 'r': return 'bcdfghjkmnprstvwx';
+                case 's': return 'chjklmnpqtvwz';
+                case 't': return 'hjrsvw';
+                case 'v': return 'r';
+                case 'w': return 'hr';
+                case 'x': return 'c';
+                case 'z': return '';
+                default: return '';
+            }
+        }
+        
+        vowelSequence(input:string):string{
+            switch(input){
+                case 'a': return '';
+                case 'e': return '';
+                case 'i': return '';
+                case 'o': return '';
+                case 'u': return '';
+                case 'y': return '';
+                
+                case 'æ': return '';
+                case 'ø': return '';
+                case 'å': return '';
+                
+                case 'ä': return '';
+                case 'ë': return '';
+                case 'ï': return '';
+                case 'ö': return '';
+                case 'ü': return '';
+                
+                case 'à': return '';
+                case 'è': return '';
+                case 'ì': return '';
+                case 'ò': return '';
+                case 'ù': return '';
+                default: return '';
+            }
+        } 
+    }
 }

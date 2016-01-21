@@ -113,7 +113,7 @@ namespace Game {
         ]);
         map.applyTemplate(houseTemplate, 30, 20);
         
-        while (agents.length < 1 ){
+        while (agents.length < 20 ){
             var cell = map.randomCell();
             if (!cell.canBeEntered()) {
                 continue;
