@@ -55,10 +55,18 @@ namespace Game {
         if (cell && cell.agent) {
             var agent = cell.agent;
             var behavior = agent.currentBehavior;
+            infoview.appendChild(document.createTextNode("Id: " + agents.indexOf(agent)));
+            infoview.appendChild(document.createElement("br"));
             if (behavior) {
                 infoview.appendChild(document.createTextNode("Behavior: " + getObjectName(behavior)));
                 visible = true;
             }
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode("Social:   " + agent.social));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode("Restless: " + agent.restless));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode("Stressed: " + agent.stressed));
         }
         infoview.style.visibility = visible ? "visible" : "hidden";
     }

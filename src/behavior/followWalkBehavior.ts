@@ -4,7 +4,7 @@ namespace Game {
         moveAction: MoveToPointAction = null;
         
         urgency(): number {
-            return this.agent.social;
+            return this.agent.social * (this.agent.currentBehavior===this ? 2 : 1);
         }
         
         update() {
@@ -13,6 +13,7 @@ namespace Game {
             }
             this.pickTarget();
             this.doMove();
+            this.agent.restless++;
         }
         
         pickTarget() {

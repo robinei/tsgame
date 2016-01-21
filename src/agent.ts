@@ -65,16 +65,11 @@ namespace Game {
             for (var i=0; i<this.behaviors.length; i++) {
                 sum += this.behaviors[i].urgency();
             }
-            
-            var weights = this.behaviors.map(
-                function(behavior):number {
-                    return behavior.urgency() / sum;
-                });
             var value = Math.random();
             var index = -1;
-            while(value >= 0 && index < weights.length){
+            while(value >= 0 && index < this.behaviors.length){
                 index++;
-                value -= weights[index];
+                value -= this.behaviors[index].urgency() / sum;
             } 
              
             this.currentBehavior = this.behaviors[index];
@@ -141,22 +136,28 @@ namespace Game {
         }
         
         evaluateNeeds(){    
-            this.social ++;                 
-            this.social = Math.max(0, this.social - (this.countPeople(this.cell, Distance.Close)/2));
-            this.stressed += this.countPeople(this.cell, Distance.Adjacent);
+            this.social++;
+            if(this.anyPeople(this.cell, Distance.Close)) {
+                this.social = Math.max(0, this.social - 3);
+            }
+            if(this.anyPeople(this.cell, Distance.Adjacent)) {
+                this.stressed += 1;
+            }
         }
         
-        countPeople(cell: MapCell, range: Distance):number {
-            var personCount = 0;
+        anyPeople(cell: MapCell, range: Distance):boolean {
+            var foundPerson = false;
             cell.forNeighbours(range,
-                (cell: MapCell) => {
-                    if(cell.agent) {
-                        personCount++;
+                ((self: Agent)=>
+                    (cell: MapCell) => {
+                        if(cell.agent && cell.agent != self) {
+                            foundPerson = true;
+                            return false;
+                        }
                         return true;
-                    }
-                    return false;
-                }) ;
-            return personCount;
+                    })
+                (this));
+            return foundPerson;
 	}
 
         getTotalInventoryWeight()

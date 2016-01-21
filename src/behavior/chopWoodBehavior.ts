@@ -24,20 +24,20 @@ namespace Game {
         }
 
         findClosestTree(){
-            var tree
+            var tree;
             this.agent.cell.forNeighbours(30, function(cell: MapCell) {
                 if (cell != null && cell.woodValue > 0){
-                    tree = cell
-                    return false
+                    tree = cell;
+                    return false;
                 }
-                return true
+                return true;
              });
 
-             return tree
+             return tree;
         }
 
         urgency():number {
-            return this.agent.restless;
+            return this.agent.restless * (this.agent.currentBehavior===this ? 2 : 1);
         }
         
         update() {
@@ -62,14 +62,14 @@ namespace Game {
                 }
             } else if (this.tree.woodValue > 0) {
                 if (!this.agent.tryAddInventoryItem(new Wood())){
-                    return
+                    return;
                 }
 
                 this.tree.woodValue--;
             } else {
-                this.reset()
+                this.reset();
             }
-            this.agent.restless  = Math.max(0, this.agent.restless-1);
+            this.agent.restless  = Math.max(0, this.agent.restless-3);
         }
 
         walkRandomly(){
