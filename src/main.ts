@@ -11,17 +11,35 @@ namespace Game {
         window.onresize = resizeCanvas;
         document.onkeydown = onKeyDown;
         document.onmousemove = onMouseMove;
+        canvas.onclick = onClick;
         generateMap();
         resizeCanvas();
     }
 
-    function onKeyDown() {
-        updateWorld();
-        drawCanvas(); 
+    function onClick(e: MouseEvent) {
+        console.log("click");
+        var p = mapDrawer.mapCoordForClientCoord(e.clientX, e.clientY);
+        mapDrawer.corner.x = p.x - Math.floor(0.5 * canvas.width / TILE_DIM);
+        mapDrawer.corner.y = p.y - Math.floor(0.5 * canvas.height / TILE_DIM);
+        drawCanvas();
+    }
+
+    function onKeyDown(e: KeyboardEvent) {
+        if (e.keyCode == 37) { // left
+            --mapDrawer.corner.x;
+        } else if (e.keyCode == 38) { // up
+            --mapDrawer.corner.y;
+        } else if (e.keyCode == 39) { // right
+            ++mapDrawer.corner.x;
+        } else if (e.keyCode == 40) { // down
+            ++mapDrawer.corner.y;
+        } else {
+            updateWorld();
+        }
+        drawCanvas();
     }
     
     function onMouseMove(e: MouseEvent) {
-        console.log(e);
         var cell = mapDrawer.getCellAtClientCoord(e.clientX, e.clientY);
         if (cell == mapDrawer.cursorCell) {
             return;
@@ -29,6 +47,7 @@ namespace Game {
         mapDrawer.cursorCell = cell;
         drawCanvas();
         
+        var visible = false;
         var infoview = document.getElementById("infoview");
         while (infoview.hasChildNodes()) {
             infoview.removeChild(infoview.firstChild);
@@ -38,8 +57,10 @@ namespace Game {
             var behavior = agent.currentBehavior;
             if (behavior) {
                 infoview.appendChild(document.createTextNode("Behavior: " + getObjectName(behavior)));
+                visible = true;
             }
         }
+        infoview.style.visibility = visible ? "visible" : "hidden";
     }
 
     function generateMap() {
@@ -113,7 +134,7 @@ namespace Game {
     function drawCanvas() {
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        mapDrawer.draw(context);
+        mapDrawer.draw(canvas, context);
     }
 }
 
