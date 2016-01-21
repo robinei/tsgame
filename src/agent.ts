@@ -110,7 +110,9 @@ namespace Game {
                 }
                 throw "cell already has agent";
             }
-            this.direction = cell.getPosition().sub(this.getPosition()).direction();
+            if (this.cell) {
+                this.direction = cell.getPosition().sub(this.getPosition()).direction();
+            }
             this.removeFromMap();
             this.cell = cell;
             cell.agent = this;
