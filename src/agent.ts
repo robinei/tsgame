@@ -45,8 +45,9 @@ namespace Game {
         restless:number = 0;
         stressed:number = 0;
         
+        name: string = "";
         
-        constructor(cell: MapCell){
+        constructor(cell: MapCell) {
             this.motionSpeed = Math.random() * 0.8 + 0.2;
             this.behaviors = [new RandomWalkBehavior(), new FollowWalkBehavior(), new ChopWoodBehavior()];
             for (var i = 0; i < this.behaviors.length; ++i) {
@@ -54,6 +55,7 @@ namespace Game {
             }
             this.moveTo(cell);
             this.chooseBehavior();
+            this.name = getRandomName();
         }
         
         chooseBehavior() {
@@ -76,7 +78,7 @@ namespace Game {
              
             this.currentBehavior = this.behaviors[index];
         }
-        
+                
         getPosition(): Point {
             return this.cell.getPosition();
         }

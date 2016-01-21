@@ -67,6 +67,13 @@ namespace Game {
                     }
                     if (cell.agent) {
                         context.drawImage(this.tileset.getTileImageByName('guy1.png'), clientX, clientY);
+                        context.fillStyle = "rgba(240, 240, 240, 1.0)"
+                        context.font="9px Arial";                        
+                        var agentName = cell.agent.name;
+                        var strWidth = context.measureText(agentName).width;
+                        context.fillText(agentName, 
+                            clientX + 0.5 * (TILE_DIM - strWidth),
+                            clientY - TILE_DIM / 8);
                     }
                     if (!cell.seen) {
                         context.fillStyle = "rgba(0, 0, 0, 0.7)";
