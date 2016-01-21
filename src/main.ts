@@ -4,10 +4,13 @@ namespace Game {
     
     map = new Map(80, 50);
     tileset = new Tileset(onTilesLoaded);
+    
+    var mapDrawer = new MapDrawer(map, tileset);
 
     function onTilesLoaded() {
         window.onresize = resizeCanvas;
         document.onkeydown = onKeyDown;
+        document.onmousemove = onMouseMove;
         generateMap();
         resizeCanvas();
     }
@@ -15,6 +18,16 @@ namespace Game {
     function onKeyDown() {
         updateWorld();
         drawCanvas(); 
+    }
+    
+    function onMouseMove(e: MouseEvent) {
+        console.log(e);
+        var cell = mapDrawer.getCellAtClientCoord(e.clientX, e.clientY);
+        if (cell == mapDrawer.cursorCell) {
+            return;
+        }
+        mapDrawer.cursorCell = cell;
+        drawCanvas();
     }
 
     function generateMap() {
@@ -88,28 +101,7 @@ namespace Game {
     function drawCanvas() {
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        
-        for (var y = 0; y < map.height; ++y) {
-            for (var x = 0; x < map.width; ++x) {
-                var cell = map.getCell(x, y);
-                if (cell.baseTile >= 0) {
-                    context.drawImage(tileset.getTileImage(cell.baseTile), x*TILE_DIM, y*TILE_DIM);
-                }
-                if (cell.woodValue > 0) {
-                    context.drawImage(tileset.getTileImageByName('tree1.png'), x*TILE_DIM, y*TILE_DIM);
-                }
-                if (cell.agent) {
-                    context.drawImage(tileset.getTileImageByName('guy1.png'), x*TILE_DIM, y*TILE_DIM);
-                }
-            }
-        }
-        
-        var path = map.calcPath(agents[0].getPosition(), new Point(31, 21));
-        for (var i = 0; i < path.length; ++i) {
-            var p = path[i];
-            context.fillStyle = "rgba(255, 255, 255, 0.1)";
-            context.fillRect(p.x*TILE_DIM, p.y*TILE_DIM, TILE_DIM, TILE_DIM);
-        }
+        mapDrawer.draw(context);
     }
 }
 
