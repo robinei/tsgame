@@ -1,16 +1,8 @@
 namespace Game {
     export class ExploreBehavior extends Behavior {
-        rangeSight = 5;
         rangeExplore = 6;
         rangeInterest = 5;
         lastUnseen: MapCell = null;
-
-        see() {
-            this.agent.cell.forNeighbours(this.rangeSight, function(cell: MapCell) {
-                cell.seen = true;
-                return true;
-            });
-        }
 
         setUnseen() {
             var self = this;
@@ -30,7 +22,6 @@ namespace Game {
         }
 
         urgency():number {
-            this.see(); // side-effect
             return this.agent.observant;
         }
 
@@ -38,7 +29,6 @@ namespace Game {
             if (!this.agent.cell) {
                 return;
             }
-            this.see();
             this.setUnseen();
         }
     }

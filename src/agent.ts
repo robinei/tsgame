@@ -31,6 +31,7 @@ namespace Game {
 
     export class Agent {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
+        baseSightRange: number = 5;
         motionSpeed: number = 1;
         motionPoints: number = 1;
         direction: Direction = Direction.North;
@@ -58,6 +59,10 @@ namespace Game {
             this.moveTo(cell);
             this.chooseBehavior();
             this.name = getRandomName();
+        }
+        
+        getSightRange() : number {
+            return this.baseSightRange;
         }
         
         chooseBehavior() {
@@ -115,6 +120,10 @@ namespace Game {
             if (this.motionPoints < 0) {
                 this.motionPoints = 0;
             }
+            cell.forNeighbours(this.getSightRange(), function(cell: MapCell) {
+                cell.seen = true;
+                return true;
+            });
         }
         
         update() {
@@ -155,7 +164,7 @@ namespace Game {
                     })
                 (this));
             return foundPerson;
-	}
+	   }
 
         getTotalInventoryWeight()
         {
