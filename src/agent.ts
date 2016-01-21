@@ -8,7 +8,7 @@ namespace Game {
     
     export class Behavior {
         agent: Agent;
-        urgency(): number { return 1 };
+        urgency(): number { return 1 }
         update() {}
     }
 
@@ -45,12 +45,13 @@ namespace Game {
         social:number = 0;
         restless:number = 0;
         stressed:number = 0;
+        observant:number = 0;
         
         name: string = "";
         
         constructor(cell: MapCell) {
             this.motionSpeed = Math.random() * 0.8 + 0.2;
-            this.behaviors = [new RandomWalkBehavior(), new FollowWalkBehavior(), new ChopWoodBehavior()];
+            this.behaviors = [new ExploreBehavior(), new RandomWalkBehavior(), new FollowWalkBehavior(), new ChopWoodBehavior()];
             for (var i = 0; i < this.behaviors.length; ++i) {
                 this.behaviors[i].agent = this;
             }
@@ -114,10 +115,6 @@ namespace Game {
             if (this.motionPoints < 0) {
                 this.motionPoints = 0;
             }
-            cell.forNeighbours(rangeSight, function(cell: MapCell) {
-                cell.seen = true;
-                return true;
-            });
         }
         
         update() {
