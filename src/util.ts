@@ -11,4 +11,11 @@ namespace Game {
         }
         return false;
     }
+    
+    export function valueOrDefault<T>(val: T, def: T): T {
+       if (val === undefined) {
+           return def;
+       }
+       return val;
+    }
 }

@@ -4,15 +4,17 @@ namespace Game {
         target: Point;
         path: Array<Point> = null;
         pathIndex: number = 1;
+        wantedDistance: Distance;
         
-        constructor(agent: Agent, target: Point) {
+        constructor(agent: Agent, target: Point, wantedDistance?: Distance) {
             super();
+            this.wantedDistance = valueOrDefault(wantedDistance, Distance.Close);
             this.agent = agent;
             this.target = target;
         }
         
         isDone(): boolean {
-            return this.agent.getPosition().distanceTo(this.target) <= Distance.Close;
+            return this.agent.getPosition().distanceTo(this.target) <= this.wantedDistance;
         }
         
         step() {

@@ -11,12 +11,13 @@ namespace Game {
     }
 
     export enum Distance {
-        Adjacent = 1,
-        Close = 2,
-        Short = 4,
-        Medium = 8,
-        Long = 16,
-        TooFar = 32
+        Zero = 1,
+        Adjacent = 2,
+        Close = 4,
+        Short = 8,
+        Medium = 16,
+        Long = 32,
+        TooFar = 64
     }
     
     export interface CellTemplate {
