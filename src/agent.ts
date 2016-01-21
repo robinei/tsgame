@@ -1,11 +1,18 @@
 namespace Game {
+    export class Action {
+        // return true as long as we want to continue to be run
+        step() : boolean {
+            return true;
+        }
+    }
+    
     export class Behavior {
-        urgency(agent: Agent):number {return 1};
-        
-        update(agent: Agent) {}
+        agent: Agent;
+        urgency(): number { return 1 };
+        update() {}
     }
 
-    enum InventoryItemType{
+    enum InventoryItemType {
         Material,
         Food,
         Weapon,
@@ -42,6 +49,9 @@ namespace Game {
         constructor(cell: MapCell){
             this.motionSpeed = Math.random() * 0.8 + 0.2;
             this.behaviors = [new RandomWalkBehavior(), new FollowWalkBehavior(), new ChopWoodBehavior()];
+            for (var i = 0; i < this.behaviors.length; ++i) {
+                this.behaviors[i].agent = this;
+            }
             this.moveTo(cell);
             this.chooseBehavior();
         }
@@ -50,12 +60,12 @@ namespace Game {
             var sum = 0;
             
             for (var i=0; i<this.behaviors.length; i++) {
-                sum += this.behaviors[i].urgency(this);
+                sum += this.behaviors[i].urgency();
             }
             
             var weights = this.behaviors.map(
                 function(behavior):number {
-                    return behavior.urgency(this) / sum;
+                    return behavior.urgency() / sum;
                 });
             var value = Math.random();
             var index = -1;
@@ -116,7 +126,7 @@ namespace Game {
             this.chooseBehavior();
             
             if (this.currentBehavior) {
-                this.currentBehavior.update(this);
+                this.currentBehavior.update();
             }
             
             if (this.motionPoints > 1) {

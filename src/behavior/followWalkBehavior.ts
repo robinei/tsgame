@@ -1,55 +1,39 @@
 namespace Game {
     export class FollowWalkBehavior extends Behavior {
         target: Agent = null;
-        path: Array<Point> = null;
-        pathIndex: number = 1;
+        moveAction: MoveToPointAction = null;
         
-        urgency(agent: Agent):number {
-            return agent.social;
+        urgency(): number {
+            return this.agent.social;
         }
         
-        update(agent: Agent) {
-            if (!agent.cell || !agent.canMoveNow()) {
+        update() {
+            if (!this.agent.cell || !this.agent.canMoveNow()) {
                 return;
             }
-            this.pickTarget(agent);
-            
-            var cell = this.findPath(agent.getPosition(), 0);
-            if(cell) {
-                agent.moveTo(cell);
-                this.pathIndex++;
-            }
-            
-            if(agent.getPosition().distanceTo(this.target.getPosition()) <= Distance.Close) {
-                this.reset();
-            }
+            this.pickTarget();
+            this.doMove();
         }
         
-        pickTarget(agent: Agent) {
-            while(this.target == null || this.target === agent) {
+        pickTarget() {
+            while(this.target == null || this.target === this.agent) {
                 var index = Math.floor(Math.random()*agents.length);
                 this.target = agents[index];
             }
         }
         
-        findPath(point: Point, attempts: number):MapCell {
-            if(this.path == null || this.pathIndex > Distance.Close) {
-                this.path = map.calcPath(point, this.target.getPosition(), false);
-                this.pathIndex = 1;
+        doMove() {
+            if (!this.moveAction) {
+                this.moveAction = new MoveToPointAction(this.agent, this.target.getPosition());
             }
-            
-            var cell = map.getCellForPoint(this.path[this.pathIndex])
-            if(!(cell && cell.canBeEntered()) && attempts < 5) {
-                cell = null;
-                this.findPath(point, attempts+1);
+            if (!this.moveAction.step()) {
+                this.reset();
             }
-            return cell;
         }
         
         reset() {
             this.target = null;
-            this.path = null;
-            this.pathIndex = 0;
+            this.moveAction = null;
         }
     }
 }

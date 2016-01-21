@@ -10,22 +10,22 @@ namespace Game {
             this.currentStep = 0
         }
 
-        findPathToTree(agent: Agent){
-            this.tree = this.findClosestTree(agent)
+        findPathToTree(){
+            this.tree = this.findClosestTree()
 
-             if (this.tree == null){
-                 this.walkRandomly(agent)
-                 return false
-             }
+            if (this.tree == null){
+                this.walkRandomly()
+                return false
+            }
 
-            this.path = map.calcPath(agent.cell.getPosition(), this.tree.getPosition(), false)
+            this.path = map.calcPath(this.agent.cell.getPosition(), this.tree.getPosition(), false)
 
             return true
         }
 
-        findClosestTree(agent: Agent){
+        findClosestTree(){
             var tree
-            agent.cell.forNeighbours(30, function(cell: MapCell) {
+            this.agent.cell.forNeighbours(30, function(cell: MapCell) {
                 if (cell != null && cell.woodValue > 0){
                     tree = cell
                     return false
@@ -36,29 +36,32 @@ namespace Game {
              return tree
         }
 
-        urgency(agent: Agent):number {
-            return agent.restless;
+        urgency():number {
+            return this.agent.restless;
         }
         
-        update(agent: Agent) {
-            if (!agent.cell) {
+        update() {
+            if (!this.agent.cell) {
                 return;
             }
 
-            if (!agent.canMoveNow()) {
+            if (!this.agent.canMoveNow()) {
                 return;
             }
 
             if (this.path == null){
-                if (!this.findPathToTree(agent))
+                if (!this.findPathToTree())
                     return;
             }
 
             if (this.currentStep < this.path.length){
                 var point = this.path[this.currentStep++]
-                agent.moveTo(map.getCell(point.x, point.y))
+                var cell = map.getCell(point.x, point.y);
+                if (cell.canBeEntered()) {
+                    this.agent.moveTo(cell);
+                }
             } else if (this.tree.woodValue > 0) {
-                if (!agent.tryAddInventoryItem(new Wood())){
+                if (!this.agent.tryAddInventoryItem(new Wood())){
                     return
                 }
 
@@ -66,15 +69,15 @@ namespace Game {
             } else {
                 this.reset()
             }
-            agent.restless  = Math.max(0, agent.restless-1);
+            this.agent.restless  = Math.max(0, this.agent.restless-1);
         }
 
-        walkRandomly(agent: Agent){
+        walkRandomly(){
             for (var tries = 0; tries < 10; ++tries) {
                 var direction = Math.floor(Math.random() * 8);
-                var cell = agent.cell.getNeighbour(direction);
+                var cell = this.agent.cell.getNeighbour(direction);
                 if (cell && cell.canBeEntered()) {
-                    agent.moveTo(cell);
+                    this.agent.moveTo(cell);
                     break;
                 }
             }

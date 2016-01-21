@@ -1,26 +1,26 @@
 namespace Game {
     export class RandomWalkBehavior extends Behavior {
-        urgency(agent: Agent):number {
-            return agent.stressed;
+        urgency():number {
+            return this.agent.stressed;
         }
         
-        update(agent: Agent) {
-            if (!agent.cell) {
+        update() {
+            if (!this.agent.cell) {
                 return;
             }
-            if (!agent.canMoveNow()) {
+            if (!this.agent.canMoveNow()) {
                 return;
             }
             for (var tries = 0; tries < 10; ++tries) {
                 var direction = Math.floor(Math.random() * 8);
-                var cell = agent.cell.getNeighbour(direction);
+                var cell = this.agent.cell.getNeighbour(direction);
                 if (cell && cell.canBeEntered()) {
-                    agent.moveTo(cell);
+                    this.agent.moveTo(cell);
                     break;
                 }
             }
-            agent.restless++;
-            agent.stressed = Math.max(0, agent.stressed-2);
+            this.agent.restless++;
+            this.agent.stressed = Math.max(0, this.agent.stressed-2);
         }
     }
 }
