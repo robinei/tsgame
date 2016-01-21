@@ -22,6 +22,39 @@ namespace Game {
         }
     }
     
+    export class FollowWalkBehavior implements Behavior {
+        target: Agent = null;
+        path: Array<Point> = null;
+        pathIndex: number = 1;
+        update(agent: Agent) {
+            if (!agent.cell || !agent.canMoveNow()) {
+                return;
+            }
+            while(this.target == null || this.target === agent) {
+                var index = Math.floor(Math.random()*agents.length);
+                this.target = agents[index];
+            }
+            if(this.path == null || this.pathIndex > Distance.Close) {
+                this.path = map.calcPath(agent.getPosition(), this.target.getPosition());
+                this.pathIndex = 1;
+            }
+            var cell = map.getCellForPoint(this.path[this.pathIndex])
+            if(cell && cell.canBeEntered()) {
+                agent.moveTo(cell);
+                this.pathIndex++;
+            }
+            if(agent.getPosition().distanceTo(this.target.getPosition()) <= Distance.Close) {
+                this.reset();
+            }
+        }
+        
+        reset() {
+            this.target = null;
+            this.path = null;
+            this.pathIndex = 0;
+        }
+    }
+    
     export class Agent {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
         motionSpeed: number = 1;

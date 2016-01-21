@@ -76,7 +76,7 @@ namespace Game {
             var agent = new Agent();
             agent.moveTo(cell);
             agent.motionSpeed = Math.random() * 0.8 + 0.2;
-            agent.currentBehavior = new RandomWalkBehavior();
+            agent.currentBehavior = Math.random() > 0.5 ? new RandomWalkBehavior() : new FollowWalkBehavior();
             agents.push(agent);
         }
         

@@ -10,6 +10,15 @@ namespace Game {
         NorthWest
     }
     
+    export enum Distance {
+        Adjacent = 1,
+        Close = 2,
+        Short = 4,
+        Medium = 8,
+        Long = 16,
+        TooFar = 32
+    }
+    
     export interface CellTemplate {
         walkable?: boolean;
         baseTile?: number;
@@ -129,6 +138,13 @@ namespace Game {
                 return null;
             }
             return this.cells[y*this.width + x];
+        }
+        
+        getCellForPoint(p: Point){
+            if(p) {
+                return this.getCell(p.x, p.y);
+            }
+            return null;
         }
         
         randomCell(): MapCell {

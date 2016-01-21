@@ -7,5 +7,11 @@ namespace Game {
             this.x = x;
             this.y = y;
         }
+        
+        distanceTo(p: Point){
+            var dx = this.x - p.x;
+            var dy = this.y - p.y;
+            return Math.sqrt(dx*dx + dy*dy);
+        }
     }
 }
