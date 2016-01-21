@@ -136,6 +136,30 @@ namespace Game {
         
         cell: MapCell = null;
         currentBehavior: Behavior = null;
+        behaviors: Array<Behavior> = null;
+        priorities: Array<number> = null;
+        
+        constructor(cell: MapCell){
+            this.motionSpeed = Math.random() * 0.8 + 0.2;
+            this.behaviors = [new RandomWalkBehavior(), new FollowWalkBehavior()];
+            this.priorities = [0.5, 0.5];
+            
+            this.moveTo(cell);
+            this.chooseBehavior();
+        }
+        
+        chooseBehavior() {
+            var sum = this.priorities.reduce(function(previousValue, currentValue):number{return previousValue+currentValue});
+            var weights = this.priorities.map(function(value):number{return value / sum});
+            var value = Math.random();
+            var index = 0;
+            while(value >= 0 && index < weights.length){
+                value -= weights[index];
+                index++;
+            } 
+             
+            this.currentBehavior = this.behaviors[index];
+        }
         
         getPosition(): Point {
             return this.cell.getPosition();
@@ -184,5 +208,7 @@ namespace Game {
                 this.motionPoints = 1;
             }
         }
+        
+        
     }
 }
