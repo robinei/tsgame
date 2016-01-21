@@ -56,7 +56,7 @@ namespace Game {
                     }
                     
                     var cell = this.map.getCell(x + this.corner.x, y + this.corner.y);
-                    if (!cell || !cell.seen) {
+                    if (!cell) {
                         continue;
                     }
                     if (cell.baseTile >= 0) {
@@ -67,6 +67,10 @@ namespace Game {
                     }
                     if (cell.agent) {
                         context.drawImage(this.tileset.getTileImageByName('guy1.png'), clientX, clientY);
+                    }
+                    if (!cell.seen) {
+                        context.fillStyle = "rgba(0, 0, 0, 0.7)";
+                        context.fillRect(clientX, clientY, TILE_DIM, TILE_DIM);
                     }
                 }
             }
