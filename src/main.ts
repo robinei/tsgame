@@ -83,7 +83,7 @@ namespace Game {
         }
         var X = CT('wall1.png', {walkable: false});
         var g = CT('grass1.png', {seen: false});
-        var t = CT('grass1.png', {woodValue: 10});
+        var t = CT('grass1.png', {doodadFactory: () => { return new Tree(tileset); }});
         var f = CT('floor1.png');
         var o = <CellTemplate>{};
         

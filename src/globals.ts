@@ -7,4 +7,5 @@ namespace Game {
     export var rangeSight = 5;
     export var storageCell: MapCell;
     export var agentCount = 1;
+    export var doodads: Array<Doodad> = [];
 }

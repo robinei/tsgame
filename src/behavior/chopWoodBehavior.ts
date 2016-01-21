@@ -3,24 +3,25 @@ namespace Game {
         path: Array<Point>;
         tree: MapCell;
         isEmptying = false;
+        treeCell: MapCell;
         currentStep = 1;
 
         reset(){
             this.path = null
-            this.tree = null
+            this.treeCell = null
             this.currentStep = 0
             console.debug("Reset")
         }
 
         findPathToTree(){
-            this.tree = this.findClosestTree()
+            this.treeCell = this.findClosestTree()
 
-            if (this.tree == null){
+            if (this.treeCell == null){
                 this.walkRandomly()
                 return false
             }
 
-            this.path = map.calcPath(this.agent.cell.getPosition(), this.tree.getPosition(), false)
+            this.path = map.calcPath(this.agent.cell.getPosition(), this.treeCell.getPosition(), false)
 
             return true
         }
@@ -28,7 +29,7 @@ namespace Game {
         findClosestTree(){
             var tree;
             this.agent.cell.forNeighbours(30, function(cell: MapCell) {
-                if (cell != null && cell.woodValue > 0){
+                if (cell != null && cell.doodad instanceof Tree) {
                     tree = cell;
                     return false;
                 }
@@ -70,7 +71,7 @@ namespace Game {
                 if (cell.canBeEntered()) {
                     this.agent.moveTo(cell);
                 }
-            } else if (this.tree.woodValue > 0) {
+            } else if (this.treeCell.doodad instanceof Tree) {
                 console.debug("Chopping")
                 if (!this.agent.tryAddInventoryItem(new Wood())){
                     console.debug("full")
@@ -79,7 +80,7 @@ namespace Game {
                     this.reset()
                     return
                 }
-                this.tree.woodValue--;
+                this.treeCell.doodad = null;
             } else {
                 this.reset();
                 this.isEmptying = true;

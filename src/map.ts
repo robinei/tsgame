@@ -20,11 +20,15 @@ namespace Game {
         TooFar = 64
     }
     
+    export interface DoodadFactory {
+        (): Doodad;
+    }
+    
     export interface CellTemplate {
         walkable?: boolean;
         baseTile?: number;
-        woodValue?: number;
         seen?: boolean;
+        doodadFactory?: DoodadFactory
     }
     
     export class MapCell {
@@ -32,10 +36,10 @@ namespace Game {
         x: number;
         y: number;
         agent: Agent = null;
+        doodad: Doodad = null;
         
         walkable: boolean;
         baseTile: number;
-        woodValue: number;
         seen: boolean;
         
         inventory = new Array<InventoryItem>();
@@ -87,14 +91,15 @@ namespace Game {
         applyDefaultTemplate() {
             this.walkable = true;
             this.baseTile = -1;
-            this.woodValue = 0;
         }
         
         applyTemplate(template: CellTemplate) {
             this.applyDefaultTemplate();
             if (template.baseTile !== undefined) { this.baseTile = template.baseTile; }
             if (template.walkable !== undefined) { this.walkable = template.walkable; }
-            if (template.woodValue !== undefined) { this.woodValue = template.woodValue; }
+            if (template.doodadFactory !== undefined) {
+                this.doodad = template.doodadFactory();
+            }
         }
     }
     

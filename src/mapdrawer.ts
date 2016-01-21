@@ -62,8 +62,8 @@ namespace Game {
                     if (cell.baseTile >= 0) {
                         context.drawImage(this.tileset.getTileImage(cell.baseTile), clientX, clientY);
                     }
-                    if (cell.woodValue > 0) {
-                        context.drawImage(this.tileset.getTileImageByName('tree1.png'), clientX, clientY);
+                    if (cell.doodad != null) {
+                        context.drawImage(cell.doodad.tileImage, clientX, clientY);
                     }
                     if (cell.agent) {
                         var source = '';
