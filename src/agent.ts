@@ -99,6 +99,10 @@ namespace Game {
         
         update() {
             this.motionPoints += this.motionSpeed;
+            this.cell.forNeighbours(rangeSight, function(cell: MapCell) {
+                cell.seen = true;
+                return true;
+            });
             if (this.currentBehavior) {
                 this.currentBehavior.update(this);
             }

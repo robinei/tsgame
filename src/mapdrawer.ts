@@ -32,10 +32,11 @@ namespace Game {
             for (var y = 0; y < this.map.height; ++y) {
                 for (var x = 0; x < this.map.width; ++x) {
                     var cell = this.map.getCell(x, y);
+                    if (!cell.seen) continue;
                     if (cell.baseTile >= 0) {
                         context.drawImage(this.tileset.getTileImage(cell.baseTile), x*TILE_DIM, y*TILE_DIM);
                     }
-                    if (cell.woodValue > 0) {
+                    if (cell.woodValue > 0 && cell.seen) {
                         context.drawImage(this.tileset.getTileImageByName('tree1.png'), x*TILE_DIM, y*TILE_DIM);
                     }
                     if (cell.agent) {

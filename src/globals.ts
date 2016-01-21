@@ -4,4 +4,5 @@ namespace Game {
     export var map: Map;
     export var tileset: Tileset;
     export var agents: Array<Agent> = [];
+    export var rangeSight = 5;
 }

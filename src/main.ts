@@ -49,7 +49,7 @@ namespace Game {
             return template;
         }
         var X = CT('wall1.png', {walkable: false});
-        var g = CT('grass1.png');
+        var g = CT('grass1.png', {seen: false});
         var t = CT('grass1.png', {woodValue: 10});
         var f = CT('floor1.png');
         var o = <CellTemplate>{};

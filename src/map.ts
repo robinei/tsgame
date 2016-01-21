@@ -23,6 +23,7 @@ namespace Game {
         walkable?: boolean;
         baseTile?: number;
         woodValue?: number;
+        seen?: boolean;
     }
     
     export class MapCell {
@@ -34,6 +35,7 @@ namespace Game {
         walkable: boolean;
         baseTile: number;
         woodValue: number;
+        seen: boolean;
         
         constructor(map: Map, x: number, y: number) {
             this.map = map;
