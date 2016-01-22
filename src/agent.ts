@@ -190,12 +190,15 @@ namespace Game {
         }
         
         tryAddInventoryItem(item: InventoryItem){
-            if ( this.getTotalInventoryWeight() + item.weight > this.carryCapacity){
+            if (!this.hasRoomForInventoryItem(item))
                 return false
-            }
             
             this.inventory.push(item)
             return true
+        }
+
+        hasRoomForInventoryItem(item: InventoryItem){
+            return ( this.getTotalInventoryWeight() + item.weight <= this.carryCapacity);
         }
             
         

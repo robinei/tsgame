@@ -99,6 +99,7 @@ namespace Game {
             if (template.walkable !== undefined) { this.walkable = template.walkable; }
             if (template.doodadFactory !== undefined) {
                 this.doodad = template.doodadFactory();
+                this.doodad.cell = this
             } else {
                 this.doodad = null;
             }
