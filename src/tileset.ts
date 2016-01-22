@@ -24,6 +24,8 @@ namespace Game {
                 'turtllama.png',
                 'bird.png',
                 'campfire_off.png',
+                'campfire_on0.png',
+                'campfire_on1.png',
             ];
             
             for (var i = 0; i < tiles.length; ++i) {

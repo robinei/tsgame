@@ -120,7 +120,7 @@ namespace Game {
     
     export class MakeCampfireBehavior extends Behavior {
         
-        campfire: MapCell;
+        campfire: Campfire;
         getStoredWoodBehavior: Behavior;
         harvestWoodBehavior: Behavior;
         delegateBehavior: Behavior;
@@ -138,11 +138,11 @@ namespace Game {
             this.harvestWoodBehavior.reset();
         }
 
-        findClosestCampfire(): MapCell {
+        findClosestCampfire(): Campfire {
             var campfire;
             this.agent.cell.forNeighbours(30, function(cell: MapCell) {
                 if (cell != null && cell.doodad instanceof Campfire) {
-                    campfire = cell;
+                    campfire = cell.doodad;
                     return false;
                 }
                 return true;
@@ -153,6 +153,9 @@ namespace Game {
         
         updateCampfire(): boolean {
             this.campfire = this.findClosestCampfire();
+            if (this.campfire) {
+                console.log("camp update");
+            }
             return toBoolean(this.campfire);
         }
         
@@ -167,6 +170,11 @@ namespace Game {
             }
             if (this.updateCampfire()) {
                 //console.debug("Found campfire");
+                if (this.campfire.isLit()) {
+                    return 0;
+                } else {
+                    return 9;
+                }
             } else {
                 //console.debug("No campfire");
             }
@@ -174,21 +182,18 @@ namespace Game {
             var urgency = this.getStoredWoodBehavior.calcUrgency();
             if (urgency > 0) {
                 this.delegateBehavior = this.getStoredWoodBehavior;
-                return Math.min(1.0, urgency + 0.1);
+                return 8 + Math.min(1.0, urgency + 0.1);
             }
             urgency = this.harvestWoodBehavior.calcUrgency();
             if (urgency > 0) {
                 this.delegateBehavior = this.harvestWoodBehavior;
-                return Math.min(1.0, urgency + 0.1);
+                return 8 + Math.min(1.0, urgency + 0.1);
             }
-            return 1.5;
+            return 9;
         }
         
         update() {
-            if (!this.agent.cell) {
-                return;
-            }
-            //console.debug("campfire update");
+            console.debug("campfire update");
             if (this.delegateBehavior) {
                 //console.debug("campfire delegate to " + typeof(this.delegateBehavior));
                 this.delegateBehavior.update();
@@ -196,6 +201,18 @@ namespace Game {
             }
             
             if (!this.agent.canMoveNow()) {
+                return;
+            }
+            
+            if (toBoolean(this.campfire) && !this.campfire.isLit()) {
+                console.log("lighting camp update");
+                if (this.campfire.cell === this.agent.cell) {
+                    this.campfire.lightFire();
+                    return;
+                }
+                var moveAction = new MoveToPointAction(this.agent, Distance.Zero);
+                moveAction.setTarget(this.campfire.cell.getPosition());
+                moveAction.step();
                 return;
             }
             
@@ -214,7 +231,7 @@ namespace Game {
             if (this.hasWood()) {
                 //console.log("making campfire");
                 this.agent.removeNextOfType(InventoryItemType.Wood);
-                this.agent.cell.doodad = new Campfire();
+                this.agent.cell.doodad = new Campfire(this.agent.cell);
             }
             
             

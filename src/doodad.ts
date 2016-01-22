@@ -54,11 +54,22 @@ namespace Game {
     export class Campfire extends Doodad {
 
         fuelCount: number;
+        private lit: boolean;
         
-        constructor() {
+        constructor(cell: MapCell) {
             super();
             this.tileImage = tileset.getTileImageByName('campfire_off.png');
             this.fuelCount = 10;
+            this.cell = cell;
+        }
+        
+        isLit(): boolean {
+            return this.lit;
+        }
+        
+        lightFire() {
+            this.tileImage = tileset.getTileImageByName('campfire_on0.png');
+            this.lit = true;
         }
     }
 }
