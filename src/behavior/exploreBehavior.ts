@@ -1,35 +1,31 @@
 namespace Game {
     export class ExploreBehavior extends Behavior {
-        rangeExplore = 6;
-        rangeInterest = 5;
-        lastUnseen: MapCell = null;
-
-        setUnseen() {
+        targetCell: MapCell = null;
+        
+        urgency(): number {
             var self = this;
-            var dir: Direction = Direction.North;
-            var curr = this.agent.cell.getPosition();
-            this.agent.cell.forNeighbours(this.rangeExplore, function(cell: MapCell) {
-                var dir = cell.getPosition().sub(curr).direction();
-                if (dir === undefined) {
+            self.targetCell = null;
+            self.agent.cell.forNeighboursUnbiased(10, function(cell: MapCell) {
+                if (cell.seen) {
                     return true;
                 }
-                if (!cell.seen && self.agent.direction == dir) {
-                    self.lastUnseen = cell;
-                    return false;
-                }
-                return true;
+                self.targetCell = cell;
+                return false;
             });
-        }
-
-        urgency():number {
-            return this.agent.observant;
+            if (self.targetCell === null) {
+                return 0;
+            }
+            return self.agent.observant * (self.agent.currentBehavior===self ? 2 : 1);
         }
 
         update() {
-            if (!this.agent.cell) {
+            if (!this.agent.cell || !this.agent.canMoveNow() || !this.targetCell) {
                 return;
             }
-            this.setUnseen();
+            
+            var moveAction = new MoveToPointAction(this.agent);
+            moveAction.setTarget(this.targetCell.getPosition());
+            moveAction.step();
         }
     }
 }

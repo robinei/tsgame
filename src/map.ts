@@ -72,14 +72,37 @@ namespace Game {
             for (var i = 0; i < areaPositionsByDistance.length; ++i) {
                 var pos = areaPositionsByDistance[i];
                 if (pos.distance > radius) {
-                    break;
+                    return;
                 }
                 var cell = this.map.getCell(this.x + pos.x, this.y + pos.y);
                 if (!cell) {
                     continue;
                 }
                 if (!func(cell)) {
-                    break;
+                    return;
+                }
+            }
+        }
+        
+        forNeighboursUnbiased(radius: number, func: (MapCell) => boolean) {
+            if (radius > maxAreaRadius) {
+                throw "too big radius";
+            }
+            for (var i = 0; i < areaPositionBuckets.length; ++i) {
+                var bucket = areaPositionBuckets[i];
+                shuffleArray(bucket);
+                for (var j = 0; j < bucket.length; ++j) {
+                    var pos = bucket[j];
+                    if (pos.distance > radius) {
+                        return;
+                    }
+                    var cell = this.map.getCell(this.x + pos.x, this.y + pos.y);
+                    if (!cell) {
+                        continue;
+                    }
+                    if (!func(cell)) {
+                        return;
+                    }
                 }
             }
         }
@@ -228,20 +251,41 @@ namespace Game {
     }
     
     var areaPositionsByDistance: AreaPos[] = [];
-    var maxAreaRadius = 32;
+    var areaPositionBuckets: AreaPos[][] = [];
     
-    for (var y = -maxAreaRadius; y <= maxAreaRadius; ++y) {
-        for (var x = -maxAreaRadius; x <= maxAreaRadius; ++x) {
-            var cx = x + 0.5;
-            var cy = y + 0.5;
-            areaPositionsByDistance.push({
-                x: x,
-                y: y,
-                distance: Math.sqrt(cx*cx + cy*cy)
-            });
+    {
+        var maxAreaRadius = 32;
+        for (var y = -maxAreaRadius; y <= maxAreaRadius; ++y) {
+            for (var x = -maxAreaRadius; x <= maxAreaRadius; ++x) {
+                var cx = x + 0.5;
+                var cy = y + 0.5;
+                areaPositionsByDistance.push({
+                    x: x,
+                    y: y,
+                    distance: Math.sqrt(cx*cx + cy*cy)
+                });
+            }
+        }
+        areaPositionsByDistance.sort(function(a: AreaPos, b: AreaPos) {
+            return a.distance - b.distance;
+        });
+        
+        var currDistance = -1;
+        var currBucket: AreaPos[] = null;
+        for (var i = 0; i < areaPositionsByDistance.length; ++i) {
+            var pos = areaPositionsByDistance[i];
+            var d = Math.floor(pos.distance);
+            if (d != currDistance) {
+                if (currBucket !== null) {
+                    areaPositionBuckets.push(currBucket);
+                }
+                currBucket = [];
+                currDistance = d;
+            }
+            currBucket.push(pos);
+        }
+        if (currBucket !== null && currBucket.length > 0) {
+            areaPositionBuckets.push(currBucket);
         }
     }
-    areaPositionsByDistance.sort(function(a: AreaPos, b: AreaPos) {
-        return a.distance - b.distance;
-    });
 }
