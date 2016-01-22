@@ -43,6 +43,7 @@ namespace Game {
         cell: MapCell = null;
         currentBehavior: Behavior = null;
         behaviors: Array<Behavior> = [];
+        urgencyThreshold: number = 10;
         
         social:number = 0;
         restless:number = 0;
@@ -72,25 +73,40 @@ namespace Game {
             return this.baseSightRange;
         }
         
+        setBehavior(behavior: Behavior) {
+            if (this.currentBehavior !== behavior) {
+                this.currentBehavior && this.currentBehavior.reset();
+                this.currentBehavior = behavior;
+            }
+        }
+        
         chooseBehavior() {
-            var sum = 0;
-            
-            var urgencies = [];
-            for (var i=0; i < this.behaviors.length; i++) {
-                var urgency = this.behaviors[i].calcUrgency();
-                urgencies.push(urgency);
-                sum += urgency;
+            var candidates = this.behaviors.map(
+                (b) => <any>{
+                    behavior: b,
+                    urgency: b.calcUrgency()
+                });
+            var max = Math.max.apply(Math, candidates.map((c) => c.urgency));
+            this.urgencyThreshold += (max * 0.80 - this.urgencyThreshold) * 0.10
+            if (this.currentBehavior) {
+                var currentBehaviorUrgency = candidates[this.behaviors.indexOf(this.currentBehavior)].urgency;
+                var treshold = this.urgencyThreshold;
+                if (currentBehaviorUrgency >= treshold) {
+                    candidates = candidates.filter((c) => c.urgency >= treshold);
+                }
             }
-            var value = Math.random();
-            var index = -1;
-            while(value >= 0 && index < this.behaviors.length){
-                index++;
-                value -= urgencies[index] / sum;
-            }
-            if (this.currentBehavior && this.currentBehavior !== this.behaviors[index]) {
-                this.currentBehavior.reset();
-            }
-            this.currentBehavior = this.behaviors[index];
+
+            var sum = candidates.map((c) => c.urgency).reduce((prev, current) => prev + current);
+            var value = Math.random() * sum;
+            this.setBehavior(
+                candidates.reduce(function(prev, current) {
+                    if (prev.urgency > value) {
+                        return prev;  // Selected behavior
+                    } else {
+                        value -= prev.urgency;
+                        return current;  // Candidate behavior
+                    }
+                }).behavior);
         }
                 
         getPosition(): Point {
