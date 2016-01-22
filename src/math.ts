@@ -56,4 +56,8 @@ namespace Game {
     }
 
     export type Vector = Point;
+    
+    export function interpolate(a:number, b:number, t:number) {
+        return a * (1-t) + b * t;
+    }
 }
