@@ -174,14 +174,14 @@ namespace Game {
             var urgency = this.getStoredWoodBehavior.calcUrgency();
             if (urgency > 0) {
                 this.delegateBehavior = this.getStoredWoodBehavior;
-                return urgency;
+                return Math.min(1.0, urgency + 0.1);
             }
             urgency = this.harvestWoodBehavior.calcUrgency();
             if (urgency > 0) {
                 this.delegateBehavior = this.harvestWoodBehavior;
-                return urgency;
+                return Math.min(1.0, urgency + 0.1);
             }
-            return 3;
+            return 1.5;
         }
         
         update() {
@@ -195,8 +195,20 @@ namespace Game {
                 return;
             }
             
+            if (!this.agent.canMoveNow()) {
+                return;
+            }
+            
             if (this.agent.cell.doodad) {
-                
+                for (var tries = 0; tries < 10; ++tries) {
+                    var direction = Math.floor(Math.random() * 8);
+                    var cell = this.agent.cell.getNeighbour(direction);
+                    if (cell && cell.canBeEntered()) {
+                        this.agent.moveTo(cell);
+                        break;
+                    }
+                }
+                return;
             }
             
             if (this.hasWood()) {
