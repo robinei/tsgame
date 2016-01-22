@@ -39,4 +39,15 @@ namespace Game {
             this.tileImage = tileset.getTileImageByName('rocks1.png');
         }
     }
+    
+    export class Campfire extends Doodad {
+
+        fuelCount: number;
+        
+        constructor() {
+            super();
+            this.tileImage = tileset.getTileImageByName('campfire_off.png');
+            this.fuelCount = 10;
+        }
+    }
 }
