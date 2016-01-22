@@ -2,15 +2,15 @@ namespace Game {
     
 
     
-    export class Doodad{
+    export class Doodad implements Entity {
         cell: MapCell = null;
         tileImage: HTMLImageElement = null;
         hitPoints = 10
 
-        tryHarvest(){
+        tryHarvest() {
             this.hitPoints--;
 
-            if (this.hitPoints < 0){
+            if (this.hitPoints < 0) {
                 this.cell.doodad = null
                 return false;
             }

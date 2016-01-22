@@ -29,7 +29,7 @@ namespace Game {
         type = InventoryItemType.Wood
     }
 
-    export class Agent {
+    export class Agent implements Entity {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
         baseSightRange: number = 5;
         motionSpeed: number = 1;
