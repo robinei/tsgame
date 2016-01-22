@@ -58,7 +58,7 @@ namespace Game {
                 new ExploreBehavior(),
                 new RandomWalkBehavior(),
                 new FollowWalkBehavior(),
-                new ChopWoodBehavior(),
+                new HarvestBehavior(),
                 new MakeCampfireBehavior()
             ];
 
