@@ -64,11 +64,22 @@ namespace Game {
                 visible = true;
             }
             infoview.appendChild(document.createElement("br"));
-            infoview.appendChild(document.createTextNode("Social:   " + agent.social));
+            infoview.appendChild(document.createTextNode(agent.attributes.vitality.toString()));
             infoview.appendChild(document.createElement("br"));
-            infoview.appendChild(document.createTextNode("Restless: " + agent.restless));
+            infoview.appendChild(document.createTextNode(agent.attributes.vigour.toString()));
             infoview.appendChild(document.createElement("br"));
-            infoview.appendChild(document.createTextNode("Stressed: " + agent.stressed));
+            infoview.appendChild(document.createTextNode(agent.attributes.sanity.toString()));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode(agent.attributes.enthusiasm.toString()));
+            
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode(agent.attributes.nutrition.toString()));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode(agent.attributes.community.toString()));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode(agent.attributes.comfort.toString()));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode(agent.attributes.curiosity.toString()));
             infoview.appendChild(document.createElement("br"));
             infoview.appendChild(document.createTextNode("Direction: " + agent.direction));
         }

@@ -11,23 +11,25 @@ namespace Game {
             
             this.increase = (n: number)  => {
                 var potential = 1-this.value;             
-                this.value = 1 - potential * this.scale(potential, n);
+                this.value = 1 - potential * this.change(potential, 0, n);
             }
             
             this.decrease = (n: number) => {            
-                this.value *= this.scale(this.value, n);
+                this.value = this.change(this.value, 0, n);
             }
         }
         
         getValue(): number {
             return this.value;
         }
-                
-        scale(value: number, n: number, b?:number, r?:number):number {
-            var base = b || 0.75;
-            var range = r || 0.2;
-            var multiplier = base + range * (1-value);
-            return Math.pow(multiplier, n); 
+        
+        change(value:number, bonus:number, n:number):number {
+            var basechange = 0.0025 + 0.005 * value + 0.0025 * bonus;
+            return value * Math.pow(1 - basechange, n); 
+        }  
+        
+        toString():string {
+            return this.displayName + ': ' + this.getValue();
         }
     }
     

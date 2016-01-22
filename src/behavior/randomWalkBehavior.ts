@@ -2,7 +2,7 @@ namespace Game {
     
     export class RandomWalkBehavior extends Behavior {
         calcUrgency(): number {
-            return this.agent.stressed * (this.agent.currentBehavior===this ? 2 : 1);
+            return this.agent.attributes.comfort.getValue() + (this.agent.currentBehavior===this ? 0.5 : 0);
         }
         
         update() {
@@ -20,8 +20,7 @@ namespace Game {
                     break;
                 }
             }
-            this.agent.restless++;
-            this.agent.stressed = Math.max(0, this.agent.stressed-2);
+            this.agent.attributes.enthusiasm.decrease(1);
         }
     }
 }

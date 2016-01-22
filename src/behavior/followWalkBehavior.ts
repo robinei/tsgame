@@ -11,7 +11,7 @@ namespace Game {
             if(agents.length <= 1){
                 return 0;
             }
-            return this.agent.attributes.community.getValue() * (this.agent.currentBehavior===this ? 2 : 1);
+            return this.agent.attributes.community.getValue() + (this.agent.currentBehavior===this ? 0.5 : 0);
         }
         
         update() {
@@ -25,7 +25,7 @@ namespace Game {
                 return;
             }
             this.doMove();
-            this.agent.restless++;
+            this.agent.attributes.enthusiasm.decrease(1);
             this.agent.attributes.comfort.increase(1);
         }
         

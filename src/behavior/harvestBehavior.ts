@@ -52,7 +52,7 @@ namespace Game {
                 return 0
             }
 
-            return this.agent.restless * (this.agent.currentBehavior===this ? 2 : 1);
+            return this.agent.attributes.enthusiasm.getValue() + (this.agent.currentBehavior===this ? 0.5 : 0);
         }
         
         update() {
@@ -74,7 +74,7 @@ namespace Game {
                  console.error("Resource type wrong")
                 this.reset();
             }
-            this.agent.restless = Math.max(0, this.agent.restless-3);
+            this.agent.attributes.enthusiasm.increase(3);
         }
 
         harvestResource(){
@@ -90,7 +90,7 @@ namespace Game {
         }
 
         walkRandomly(){
-            this.agent.restless  = Math.max(0, this.agent.restless-1);
+            this.agent.attributes.enthusiasm.increase(1);
             for (var tries = 0; tries < 10; ++tries) {
                 var direction = Math.floor(Math.random() * 8);
                 var cell = this.agent.cell.getNeighbour(direction);

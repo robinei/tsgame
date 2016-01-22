@@ -51,65 +51,55 @@ namespace Game {
         nutrition:Need;
         comfort:Need;
         community:Need;
-        
-        private minNeedChange: number = 0.5;
-        private rangeNeedChange: number = 0.4;
-        private bonusNeedChange: number = 0.2;
+        curiosity:Need;
         
         setNeeds() {
             this.nutrition = new Need("Nutrition", this,
                 (self:Need) => (n:number) => {
-                    var potential = 1-self.value;             
-                
-                    var bonus = self.attributes.strength.getValue() * this.bonusNeedChange;
-                    var min = this.minNeedChange + bonus;
-                    var range = this.rangeNeedChange - bonus;
+                    var stat = self.attributes.strength.getValue() + (1-self.attributes.vigour.getValue())/2;
                     
-                    self.value = 1 - potential * self.scale(potential, n, min, range); 
+                    self.value = 1 - self.change(1 - self.value, n, stat); 
                 },
                 (self:Need) => (n:number) => {
-                    var bonus = self.attributes.strength.getValue() * this.bonusNeedChange;
-                    var min = this.minNeedChange - bonus;
-                    var range = this.rangeNeedChange + bonus;
+                    var stat = self.attributes.strength.getValue();
                     
-                    self.value *= self.scale(self.value, n, min, range);                    
+                    self.value =  self.change(self.value, n, -stat);
                 });
-                
+            
             this.comfort = new Need("Comfort", this,
                 (self:Need) => (n:number) => {
-                    var potential = 1-self.value;             
-                
-                    var bonus = self.attributes.charisma.getValue() * this.bonusNeedChange;
-                    var min = this.minNeedChange + bonus;
-                    var range = this.rangeNeedChange - bonus;
+                    var stat = (1-self.attributes.vitality.getValue() + 1-self.attributes.vigour.getValue())/2;
                     
-                    self.value = 1 - potential * self.scale(potential, n, min, range); 
+                    self.value = 1 - self.change(1 - self.value, n, stat); 
                 },
                 (self:Need) => (n:number) => {
-                    var bonus = self.attributes.wisdom.getValue() * this.bonusNeedChange;
-                    var min = this.minNeedChange + bonus;
-                    var range = this.rangeNeedChange - bonus;
+                    var stat = self.attributes.vigour.getValue();
                     
-                    self.value *= self.scale(self.value, n, min, range);                    
+                    self.value =  self.change(self.value, n, stat);                    
                 });
-               
-                
+            
             this.community = new Need("Community", this,
                 (self:Need) => (n:number) => {
-                    var potential = 1-self.value;             
-                
-                    var bonus = self.attributes.charisma.getValue() * this.bonusNeedChange;
-                    var min = this.minNeedChange + bonus;
-                    var range = this.rangeNeedChange - bonus;
+                    var stat = (self.attributes.charisma.getValue() + self.attributes.enthusiasm.getValue())/2;
                     
-                    self.value = 1 - potential * self.scale(potential, n, min, range);                  
+                    self.value = 1 - self.change(1 - self.value, n, stat);                  
                 },
                 (self:Need) => (n:number) => {
-                    var bonus = self.attributes.social.getValue() * this.bonusNeedChange;
-                    var min = this.minNeedChange + bonus;
-                    var range = this.rangeNeedChange - bonus;
+                    var stat = self.attributes.social.getValue();
                     
-                    self.value *= self.scale(self.value, n, min, range);
+                    self.value =  self.change(self.value, n, stat);  
+                });
+                
+            this.curiosity = new Need("Curiosity", this,
+                (self:Need) => (n:number) => {
+                    var stat = (self.attributes.intelligence.getValue() + self.attributes.enthusiasm.getValue())/2;
+                    
+                    self.value = 1 - self.change(1 - self.value, n, stat);                  
+                },
+                (self:Need) => (n:number) => {
+                    var stat = self.attributes.wisdom.getValue();
+                    
+                    self.value =  self.change(self.value, n, stat);  
                 });
         }
     }

@@ -73,11 +73,7 @@ namespace Game {
         urgencyThreshold: number = 10;
         
         attributes:AttributeComponent = new AttributeComponent();
-        social:number = 0;
-        restless:number = 0;
-        stressed:number = 0;
-        observant:number = 0;
-        
+                
         name: string = "";
         skin: Skin = new RegularGuy()
         
@@ -213,17 +209,14 @@ namespace Game {
             }
         }
         
-        evaluateNeeds(){    
-            this.social++;
+        evaluateNeeds(){
             this.attributes.community.increase(2);
             this.attributes.nutrition.increase(2);
             this.attributes.comfort.increase(1);
             if(this.anyPeople(this.cell, Distance.Close)) {
-                this.social = Math.max(0, this.social - 3);
                 this.attributes.community.decrease(4);
             }
             if(this.anyPeople(this.cell, Distance.Adjacent)) {
-                this.stressed += 1;
                 this.attributes.comfort.increase(1);
             }
         }
