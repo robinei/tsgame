@@ -1,4 +1,5 @@
 namespace Game {
+    
     export class RandomWalkBehavior extends Behavior {
         calcUrgency(): number {
             return this.agent.stressed * (this.agent.currentBehavior===this ? 2 : 1);

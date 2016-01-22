@@ -87,11 +87,11 @@ namespace Game {
             var availableItemCount = GetItemOfTypeCount(this.agent.cell, this.itemType);
             var takeItemCount = Math.min(desiredItemCount, availableItemCount);
             if (takeItemCount > 0) {
-                console.debug("Taking items");
+                //console.debug("Taking items");
                 for (; takeItemCount > 0; --takeItemCount) {
                     var item = RemoveItemOfType(this.agent.cell, this.itemType);
                     this.agent.cell.putItem(item);
-                    console.debug("Picking up item " + item);
+                    //console.debug("Picking up item " + item);
                 }
                 return;
             }
@@ -101,7 +101,7 @@ namespace Game {
             }
             
             if (!this.updateCellWithItem()) {
-                console.log("No cell with wood");
+                //console.log("No cell with wood");
                 return;
             }
             
@@ -109,11 +109,11 @@ namespace Game {
             if (path.length > 1) {
                 var cell = map.getCellForPoint(path[1]);
                 if (cell.canBeEntered()) {
-                    console.debug("Moving to storage point : " + cell.getPosition() + " s : ")
+                    //console.debug("Moving to storage point : " + cell.getPosition() + " s : ")
                     this.agent.moveTo(cell);
                 }
             } else {
-                console.debug("Strange path in campfire behavior");
+                //console.debug("Strange path in campfire behavior");
             }
         }        
     }
@@ -122,16 +122,20 @@ namespace Game {
         
         campfire: MapCell;
         getStoredWoodBehavior: Behavior;
+        harvestWoodBehavior: Behavior;
+        delegateBehavior: Behavior;
 
         constructor(agent: Agent) {
             super(agent);
             this.getStoredWoodBehavior = new GetStoredItemsBehavior(
                 agent, InventoryItemType.Wood, 2);
+            this.harvestWoodBehavior = new HarvestBehavior(agent);
         }
         
         reset() {
             this.campfire = null;
-            this.getStoredWoodBehavior.reset();            
+            this.getStoredWoodBehavior.reset();
+            this.harvestWoodBehavior.reset();
         }
 
         findClosestCampfire(): MapCell {
@@ -162,9 +166,20 @@ namespace Game {
                 return 0;
             }
             if (this.updateCampfire()) {
-                console.debug("Found campfire");
+                //console.debug("Found campfire");
             } else {
-                console.debug("No campfire");
+                //console.debug("No campfire");
+            }
+            this.delegateBehavior =  null;
+            var urgency = this.getStoredWoodBehavior.calcUrgency();
+            if (urgency > 0) {
+                this.delegateBehavior = this.getStoredWoodBehavior;
+                return urgency;
+            }
+            urgency = this.harvestWoodBehavior.calcUrgency();
+            if (urgency > 0) {
+                this.delegateBehavior = this.harvestWoodBehavior;
+                return urgency;
             }
             return 3;
         }
@@ -173,8 +188,24 @@ namespace Game {
             if (!this.agent.cell) {
                 return;
             }
+            //console.debug("campfire update");
+            if (this.delegateBehavior) {
+                //console.debug("campfire delegate to " + typeof(this.delegateBehavior));
+                this.delegateBehavior.update();
+                return;
+            }
             
-            this.getStoredWoodBehavior.update();
+            if (this.agent.cell.doodad) {
+                
+            }
+            
+            if (this.hasWood()) {
+                //console.log("making campfire");
+                this.agent.removeNextOfType(InventoryItemType.Wood);
+                this.agent.cell.doodad = new Campfire();
+            }
+            
+            
         }
 
     }

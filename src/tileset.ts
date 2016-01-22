@@ -23,6 +23,7 @@ namespace Game {
                 'wonkey.png',
                 'turtllama.png',
                 'bird.png',
+                'campfire_off.png',
             ];
             
             for (var i = 0; i < tiles.length; ++i) {
