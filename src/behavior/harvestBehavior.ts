@@ -20,7 +20,6 @@ namespace Game {
     
     export class HarvestBehavior extends Behavior {
         resource: MapCell;
-        isEmptying = false;
         resourceCell: MapCell;
         targetResource = ResourceType.Wood
         movetoPoint: MoveToPointAction;
@@ -49,21 +48,16 @@ namespace Game {
         }
 
         calcUrgency(): number {
-            if (this.isEmptying) {
-                return 0;
+            if (this.agent.getTotalInventoryWeight() == this.agent.carryCapacity){
+                return 0
             }
 
             return this.agent.restless * (this.agent.currentBehavior===this ? 2 : 1);
         }
         
         update() {
-            if (!this.agent.cell || !this.agent.canMoveNow()) {
+            if (!this.agent.cell || !this.agent.canMoveNow() || this.agent.getTotalInventoryWeight() == this.agent.carryCapacity) {
                 return;
-            }
-
-            if (this.isEmptying){
-                this.empty()
-                return
             }
             
             if (this.movetoPoint == null || this.movetoPoint.path == null) {
@@ -86,38 +80,12 @@ namespace Game {
         harvestResource(){
              if (this.agent.hasRoomForInventoryItem(new Wood() )){
                 if (this.resourceCell.doodad.tryHarvest()){
-                    console.debug("Harvesting")
                     this.agent.inventory.push(new Wood());
                 } else {
-                    console.debug("Resource empty")
                     this.reset();
                 }
             } else {
-                console.debug("No room in inventory")
-                this.reset();
-                this.isEmptying = true;
-            }
-        }
-
-        empty(){
-            if (this.movetoPoint == null){
-                this.movetoPoint = new MoveToPointAction(this.agent, 0)
-                this.movetoPoint.setTarget(storageCell.getPosition())
-            }
-
-            if (!this.movetoPoint.isDone()) {
-                console.debug("Returning to storage")
-                this.movetoPoint.step()
-            } else {
-                console.debug("At storage point, emptying")
-                var item = this.agent.removeNextOfType(InventoryItemType.Wood);
-                if (item != null){
-                    storageCell.putItem(item);
-                    return;
-                }
-                
-                this.isEmptying = false;
-                this.reset();
+                console.debug("Inventory full...." +  this.agent.name)
             }
         }
 

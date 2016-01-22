@@ -63,7 +63,8 @@ namespace Game {
                 new RandomWalkBehavior(this),
                 new FollowWalkBehavior(this),
                 new HarvestBehavior(this),
-                new MakeCampfireBehavior(this)
+                new MakeCampfireBehavior(this),
+                new DeliverBehavior(this)
             ];
 
             this.moveTo(cell);
