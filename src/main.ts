@@ -6,6 +6,8 @@ namespace Game {
     tileset = new Tileset(onTilesLoaded);
     
     var mapDrawer = new MapDrawer(map, tileset);
+    
+    storageCell = map.getCell(20, 20)
 
     function onTilesLoaded() {
         window.onresize = resizeCanvas;
@@ -67,10 +69,30 @@ namespace Game {
             infoview.appendChild(document.createTextNode("Restless: " + agent.restless));
             infoview.appendChild(document.createElement("br"));
             infoview.appendChild(document.createTextNode("Stressed: " + agent.stressed));
+            infoview.appendChild(document.createElement("br"));
+            infoview.appendChild(document.createTextNode("Direction: " + agent.direction));
         }
         infoview.style.visibility = visible ? "visible" : "hidden";
     }
-
+    
+    class RandomTemplatePicker {
+        
+        constructor(public templates: CellTemplate[], weights: number[]) {
+            this.templates = [];
+            var maxTi = Math.min(templates.length, weights.length);
+            for (var ti = 0; ti < maxTi; ++ti) {
+                for (var ii = 0; ii < weights[ti]; ++ii) {
+                    this.templates.push(templates[ti]);
+                }
+            }
+        }
+        
+        getRandomTemplate(): CellTemplate {
+            var index = Math.floor(Math.random() * this.templates.length);
+            return this.templates[index];
+        }
+    }
+    
     function generateMap() {
         function CT(baseTileName: string, template?: CellTemplate) {
             template = template || {};
@@ -78,19 +100,19 @@ namespace Game {
             return template;
         }
         var X = CT('wall1.png', {walkable: false});
-        var g = CT('grass1.png', {seen: false});
-        var t = CT('grass1.png', {woodValue: 10});
         var f = CT('floor1.png');
         var o = <CellTemplate>{};
+        var g = CT('grass1.png', { seen: false });
+        var t = CT('grass1.png', { doodadFactory: () => { return new Tree(); }});
+        var b = CT('grass1.png', { doodadFactory: () => { return new Bush(); }});
+        var r = CT('grass1.png', { doodadFactory: () => { return new Rocks(); }});
+        var randomTemplatePicker = new RandomTemplatePicker(
+            [ g, t, b, r ],
+            [ 50, 2, 1, 1]);
         
         for (var y = 0; y < map.height; ++y) {
             for (var x = 0; x < map.width; ++x) {
-                var template: CellTemplate;
-                if (Math.random() < 0.1) {
-                    template = t;
-                } else {
-                    template = g;
-                }
+                var template = randomTemplatePicker.getRandomTemplate();
                 map.applyCellTemplate(template, x, y);
             }
         }
@@ -109,7 +131,7 @@ namespace Game {
         ]);
         map.applyTemplate(houseTemplate, 30, 20);
         
-        while (agents.length < 15) {
+        while (agents.length < 20 ) {
             var cell = map.randomCell();
             if (!cell.canBeEntered()) {
                 continue;

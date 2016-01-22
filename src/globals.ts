@@ -4,4 +4,6 @@ namespace Game {
     export var map: Map;
     export var tileset: Tileset;
     export var agents: Array<Agent> = [];
+    export var storageCell: MapCell;
+    export var doodads: Array<Doodad> = [];
 }

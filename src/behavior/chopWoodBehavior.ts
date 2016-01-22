@@ -2,23 +2,26 @@ namespace Game {
     export class ChopWoodBehavior extends Behavior {
         path: Array<Point>;
         tree: MapCell;
+        isEmptying = false;
+        treeCell: MapCell;
         currentStep = 1;
 
         reset(){
             this.path = null
-            this.tree = null
+            this.treeCell = null
             this.currentStep = 0
+            console.debug("Reset")
         }
 
         findPathToTree(){
-            this.tree = this.findClosestTree()
+            this.treeCell = this.findClosestTree()
 
-            if (this.tree == null){
+            if (this.treeCell == null){
                 this.walkRandomly()
                 return false
             }
 
-            this.path = map.calcPath(this.agent.cell.getPosition(), this.tree.getPosition(), false)
+            this.path = map.calcPath(this.agent.cell.getPosition(), this.treeCell.getPosition(), false)
 
             return true
         }
@@ -26,7 +29,7 @@ namespace Game {
         findClosestTree(){
             var tree;
             this.agent.cell.forNeighbours(30, function(cell: MapCell) {
-                if (cell != null && cell.woodValue > 0){
+                if (cell != null && cell.doodad instanceof Tree) {
                     tree = cell;
                     return false;
                 }
@@ -46,33 +49,74 @@ namespace Game {
             }
 
             if (!this.agent.canMoveNow()) {
+                console.debug("Can't move")
                 return;
             }
 
+            console.debug("Empty? " + this.isEmptying)
+            if (this.isEmptying){
+                this.empty()
+                return
+            }
+            
             if (this.path == null){
                 if (!this.findPathToTree())
                     return;
             }
 
             if (this.currentStep < this.path.length){
+                console.debug("Moving")
                 var point = this.path[this.currentStep++]
                 var cell = map.getCell(point.x, point.y);
                 if (cell.canBeEntered()) {
                     this.agent.moveTo(cell);
                 }
-            } else if (this.tree.woodValue > 0) {
+            } else if (this.treeCell.doodad instanceof Tree) {
+                console.debug("Chopping")
                 if (!this.agent.tryAddInventoryItem(new Wood())){
-                    return;
+                    console.debug("full")
+                    this.isEmptying = true;
+                    console.debug("Empty? " + this.isEmptying)
+                    this.reset()
+                    return
                 }
-
-                this.tree.woodValue--;
+                this.treeCell.doodad = null;
             } else {
                 this.reset();
+                this.isEmptying = true;
+                console.debug("Empty? " + this.isEmptying)
+                this.reset()
             }
             this.agent.restless  = Math.max(0, this.agent.restless-3);
         }
 
+        empty(){
+            console.debug("Emptying")
+            console.debug("Storage point " + storageCell)
+            
+            if (this.path == null){
+                this.path = map.calcPath(this.agent.cell.getPosition(), storageCell.getPosition(), false)
+            }
+
+            if (this.currentStep < this.path.length){
+                var point = this.path[this.currentStep++]
+                this.agent.moveTo(map.getCell(point.x, point.y))
+            } else {
+                var item = this.agent.removeNextOfType(InventoryItemType.Wood)
+                if (item != null){
+                    storageCell.putItem(item);
+                    return;
+                }
+                
+                this.isEmptying = false;
+                this.reset()
+                    
+                console.debug("At storage point : p : " + this.agent.cell.getPosition() + " s : " + storageCell.getPosition())
+            }
+        }
+
         walkRandomly(){
+            this.agent.restless  = Math.max(0, this.agent.restless-1);
             for (var tries = 0; tries < 10; ++tries) {
                 var direction = Math.floor(Math.random() * 8);
                 var cell = this.agent.cell.getNeighbour(direction);

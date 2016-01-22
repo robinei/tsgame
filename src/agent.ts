@@ -12,8 +12,8 @@ namespace Game {
         update() {}
     }
 
-    enum InventoryItemType {
-        Material,
+    export enum InventoryItemType {
+        Wood,
         Food,
         Weapon,
         Tool
@@ -26,7 +26,7 @@ namespace Game {
 
     export class Wood implements InventoryItem{
         weight = 1
-        type = InventoryItemType.Material
+        type = InventoryItemType.Wood
     }
 
     export class Agent {
@@ -77,8 +77,8 @@ namespace Game {
                 index++;
                 value -= this.behaviors[index].urgency() / sum;
             } 
-             
             this.currentBehavior = this.behaviors[index];
+            
         }
                 
         getPosition(): Point {
@@ -178,6 +178,19 @@ namespace Game {
             });
             
             return weight
+        }
+        
+        removeNextOfType(itemType: InventoryItemType): InventoryItem {
+            var foundItem;
+            
+            for (var i = 0; i < this.inventory.length; ++i){
+                if (this.inventory[i].type == itemType){
+                    foundItem = this.inventory[i];
+                    this.inventory.splice(i, 1);
+                }
+            }
+            
+            return foundItem;
         }
         
         tryAddInventoryItem(item: InventoryItem){

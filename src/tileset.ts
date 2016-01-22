@@ -11,8 +11,18 @@ namespace Game {
                 'grass1.png',
                 'wall1.png',
                 'tree1.png',
+                'bush1_without_berries.png',
+                'bush1_with_berries.png',
+                'rocks1.png',
                 'floor1.png',
                 'guy1.png',
+                'guy2f.png',
+                'guy2r.png',
+                'guy2b.png',
+                'guy2l.png',
+                'wonkey.png',
+                'turtllama.png',
+                'bird.png',
             ];
             
             for (var i = 0; i < tiles.length; ++i) {
