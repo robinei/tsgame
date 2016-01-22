@@ -45,7 +45,9 @@ namespace Game {
         
         reset() {
             this.target = null;
-            this.moveAction.setTarget(null);
+            if (this.moveAction != null) {
+                this.moveAction.setTarget(null);
+            }
         }
     }
 }

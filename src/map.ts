@@ -31,7 +31,7 @@ namespace Game {
         doodadFactory?: DoodadFactory
     }
     
-    export class MapCell {
+    export class MapCell implements ItemHolder {
         map: Map;
         x: number;
         y: number;
