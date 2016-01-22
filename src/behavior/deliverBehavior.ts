@@ -1,15 +1,10 @@
 namespace Game {
     export class DeliverBehavior extends Behavior {
         movetoPoint: MoveToPointAction;
-        doneEmptying = false;
 
         calcUrgency(): number {
-            if (this.doneEmptying) {
-                return 0;
-            } else {
-                var w = this.agent.getTotalInventoryWeight();
-                return (w / this.agent.carryCapacity);
-            }
+            var w = this.agent.getTotalInventoryWeight();
+            return (w / this.agent.carryCapacity);
         }
             
         update() {
@@ -21,12 +16,11 @@ namespace Game {
             if (!this.movetoPoint.isDone()) {
                 this.movetoPoint.step()
             } else {
-                var item = this.agent.removeNextOfType(InventoryItemType.Wood);
-                if (item != null){
-                    storageCell.putItem(item);
-                    return;
-                } else {
-                    this.doneEmptying = true;
+                while (this.agent.inventory.length) {
+                    var item = this.agent.inventory.pop();
+                    if (item != null){
+                        storageCell.putItem(item);
+                    }
                 }
             }
         }

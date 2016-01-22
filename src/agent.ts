@@ -126,7 +126,7 @@ namespace Game {
             var candidates = this.behaviors.map(
                 (b) => <any>{
                     behavior: b,
-                    urgency: b.calcUrgency()
+                    urgency: b.calcUrgency() + (b === this.currentBehavior ? 0.5 : 0)
                 });
             var max = Math.max.apply(Math, candidates.map((c) => c.urgency));
             this.urgencyThreshold += (max * 0.80 - this.urgencyThreshold) * 0.10
@@ -217,14 +217,14 @@ namespace Game {
         }
         
         evaluateNeeds(){
-            this.attributes.community.increase(2);
-            this.attributes.nutrition.increase(2);
-            this.attributes.comfort.increase(1);
+            this.attributes.community.update(1);
+            this.attributes.nutrition.update(1);
+            this.attributes.comfort.update(1);
             if(this.anyPeople(this.cell, Distance.Close)) {
-                this.attributes.community.decrease(4);
+                this.attributes.community.update(-10);
             }
             if(this.anyPeople(this.cell, Distance.Adjacent)) {
-                this.attributes.comfort.increase(1);
+                this.attributes.comfort.update(1);
             }
         }
         

@@ -10,14 +10,14 @@ namespace Game {
                     return true;
                 }
                 self.targetCell = cell;
-                self.agent.attributes.curiosity.increase(0.2);
+                self.agent.attributes.curiosity.update(0.2);
                 return false;
             });
             if (self.targetCell === null) {
-                self.agent.attributes.curiosity.decrease(5);
+                self.agent.attributes.curiosity.update(-5);
                 return 0;
             }
-            return self.agent.attributes.curiosity.getValue() + (self.agent.currentBehavior===self ? 0.5 : 0);
+            return self.agent.attributes.curiosity.getValue();
         }
 
         update() {

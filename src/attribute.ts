@@ -4,17 +4,16 @@ namespace Game {
         value: number = 0.5;
         increase: (n: number) => void;
         decrease: (n: number) => void;
+        update: (n:number) => void;
+        updateBonus: () => number;
                 
-        constructor(name:string, val?:number) {
+        constructor(name: string, val?: number, updateBonus?: ()=> number) {
             this.displayName = name;
             this.value = val;
+            this.updateBonus = updateBonus || (() => 0);
             
-            this.increase = (n: number)  => {
-                this.value = this.change(this.value, 0, -n);
-            }
-            
-            this.decrease = (n: number) => {
-                this.value = this.change(this.value, 0, n);
+            this.update = (n: number)  => {
+                this.value = this.change(this.value, this.updateBonus(), n);
             }
         }
         
@@ -53,17 +52,9 @@ namespace Game {
     
     export class Need extends Attribute {
         attributes:AttributeComponent;
-        constructor(name:string, a:AttributeComponent,
-            inc?: (self:Need) => (n: number) => void,
-            dec?: (self:Need) => (n: number) => void) {
-            super(name, 0);
+        constructor(name:string, a:AttributeComponent, updateBonus?: (self: Need) => () => number) {
             this.attributes = a;
-            if (inc) {
-                this.increase = (inc(this));
-            }
-            if (dec) {
-                this.decrease = (dec(this));
-            }
+            super(name, 0, updateBonus ? updateBonus(this) : null);
         }
         getValue() {
             return this.value;

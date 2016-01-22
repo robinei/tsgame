@@ -2,13 +2,14 @@ namespace Game {
     
     export class RandomWalkBehavior extends Behavior {
         calcUrgency(): number {
-            return this.agent.attributes.comfort.getValue() + (this.agent.currentBehavior===this ? 0.5 : 0);
+            return this.agent.attributes.comfort.getValue();
         }
         
         update() {
             if (!this.agent.cell) {
                 return;
             }
+            this.agent.attributes.comfort.update(-10);
             if (!this.agent.canMoveNow()) {
                 return;
             }
@@ -20,7 +21,6 @@ namespace Game {
                     break;
                 }
             }
-            this.agent.attributes.enthusiasm.decrease(1);
         }
     }
 }
