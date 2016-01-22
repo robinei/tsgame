@@ -49,6 +49,10 @@ namespace Game {
         }
 
         calcUrgency(): number {
+            if (this.isEmptying) {
+                return 0;
+            }
+
             return this.agent.restless * (this.agent.currentBehavior===this ? 2 : 1);
         }
         
