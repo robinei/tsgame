@@ -151,6 +151,9 @@ namespace Game {
             agent.motionSpeed = Math.random() * 0.8 + 0.2;
             agents.push(agent);
         }
+// Activates zombie-wonkies:
+//        agents[0].skin = new WonkeySkin()
+//        agents[0].behaviors = [ new KillBehavior(agents[0]) ];
         
         map.getCell(40, 40).forNeighbours(5, function(cell: MapCell) {
             cell.baseTile = t.baseTile;

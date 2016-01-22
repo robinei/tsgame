@@ -56,6 +56,12 @@ namespace Game {
             }
         }
     }
+    
+    export class WonkeySkin implements Skin {
+        imageSource(direction: Direction) : string {
+            return 'wonkey.png'
+        }
+    }
 
     export class Agent implements Entity {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
@@ -123,7 +129,7 @@ namespace Game {
                 });
             var max = Math.max.apply(Math, candidates.map((c) => c.urgency));
             this.urgencyThreshold += (max * 0.80 - this.urgencyThreshold) * 0.10
-            if (this.currentBehavior) {
+            if (this.currentBehavior && this.behaviors.indexOf(this.currentBehavior) !== -1) {
                 var currentBehaviorUrgency = candidates[this.behaviors.indexOf(this.currentBehavior)].urgency;
                 var treshold = this.urgencyThreshold;
                 if (currentBehaviorUrgency >= treshold) {
