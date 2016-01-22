@@ -32,9 +32,9 @@ namespace Game {
 
     export class Agent implements Entity {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
-        baseSightRange: number = 5;
         motionSpeed: number = 1;
         motionPoints: number = 1;
+        baseSightRange: number = 5;
         direction: Direction = Direction.North;
         carryCapacity: number = 20;
 
@@ -108,12 +108,7 @@ namespace Game {
         }
 
         canMoveNow(): boolean {
-            if (this.motionPoints >= 1){
-                this.motionPoints = 0
-                return true
-            }
-
-            return false              
+            return this.motionPoints >= 1;
         }
 
         moveTo(cell: MapCell) {
@@ -133,9 +128,15 @@ namespace Game {
             this.removeFromMap();
             this.cell = cell;
             cell.agent = this;
+            
+            // don't reduce motionPoints to 0 when moving, but allow it to retain some until next turn
+            // so that the motion will in average reflect the actual motionSpeed over time
+            this.motionPoints -= 1;
             if (this.motionPoints < 0) {
                 this.motionPoints = 0;
             }
+            
+            // see all cells around the new position
             cell.forNeighbours(this.getSightRange(), function(cell: MapCell) {
                 cell.seen = true;
                 return true;
