@@ -58,7 +58,7 @@ namespace Game {
                 (self:Need) => (n:number) => {
                     var stat = self.attributes.strength.getValue() + (1-self.attributes.vigour.getValue())/2;
                     
-                    self.value = 1 - self.change(1 - self.value, n, stat); 
+                    self.value = 1 - self.change(1 - self.value, stat, n); 
                 },
                 (self:Need) => (n:number) => {
                     var stat = self.attributes.strength.getValue();
@@ -70,36 +70,36 @@ namespace Game {
                 (self:Need) => (n:number) => {
                     var stat = (1-self.attributes.vitality.getValue() + 1-self.attributes.vigour.getValue())/2;
                     
-                    self.value = 1 - self.change(1 - self.value, n, stat); 
+                    self.value = 1 - self.change(1 - self.value, stat, n); 
                 },
                 (self:Need) => (n:number) => {
                     var stat = self.attributes.vigour.getValue();
                     
-                    self.value =  self.change(self.value, n, stat);                    
+                    self.value = self.change(self.value, stat, -n);                    
                 });
             
             this.community = new Need("Community", this,
                 (self:Need) => (n:number) => {
                     var stat = (self.attributes.charisma.getValue() + self.attributes.enthusiasm.getValue())/2;
                     
-                    self.value = 1 - self.change(1 - self.value, n, stat);                  
+                    self.value = self.change(self.value, stat, n);              
                 },
                 (self:Need) => (n:number) => {
                     var stat = self.attributes.social.getValue();
                     
-                    self.value =  self.change(self.value, n, stat);  
+                    self.value = self.change(self.value, stat, -n);  
                 });
                 
             this.curiosity = new Need("Curiosity", this,
                 (self:Need) => (n:number) => {
                     var stat = (self.attributes.intelligence.getValue() + self.attributes.enthusiasm.getValue())/2;
                     
-                    self.value = 1 - self.change(1 - self.value, n, stat);                  
+                    self.value = self.change(self.value, stat, n);              
                 },
                 (self:Need) => (n:number) => {
                     var stat = self.attributes.wisdom.getValue();
                     
-                    self.value =  self.change(self.value, n, stat);  
+                    self.value = self.change(self.value, stat, -n);  
                 });
         }
     }

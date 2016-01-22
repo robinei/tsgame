@@ -10,11 +10,10 @@ namespace Game {
             this.value = val;
             
             this.increase = (n: number)  => {
-                var potential = 1-this.value;             
-                this.value = 1 - potential * this.change(potential, 0, n);
+                this.value = this.change(this.value, 0, -n);
             }
             
-            this.decrease = (n: number) => {            
+            this.decrease = (n: number) => {
                 this.value = this.change(this.value, 0, n);
             }
         }
@@ -24,8 +23,7 @@ namespace Game {
         }
         
         change(value:number, bonus:number, n:number):number {
-            var basechange = 0.0025 + 0.005 * value + 0.0025 * bonus;
-            return value * Math.pow(1 - basechange, n); 
+            return Math.max(0, Math.min(1, value + 0.01 * (1 + bonus) * n));
         }  
         
         toString():string {
