@@ -3,6 +3,10 @@ namespace Game {
         target: Agent = null;
         moveAction: MoveToPointAction = null;
                 
+        toString(): string {
+            return super.toString() + (this.target? "(Target: " + this.target.name + ")" : "")
+        }
+
         calcUrgency(): number {
             if(agents.length <= 1){
                 return 0;
@@ -32,8 +36,8 @@ namespace Game {
             while(this.target == null || this.target === this.agent) {
                 var index = Math.floor(Math.random()*agents.length);
                 this.target = agents[index];
-                this.moveAction.setTarget(this.target.getPosition());
             }
+            this.moveAction.setTarget(this.target.getPosition());
             return true;
         }
         

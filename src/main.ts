@@ -60,7 +60,7 @@ namespace Game {
             infoview.appendChild(document.createTextNode("Id: " + agents.indexOf(agent)));
             infoview.appendChild(document.createElement("br"));
             if (behavior) {
-                infoview.appendChild(document.createTextNode("Behavior: " + getObjectName(behavior)));
+                infoview.appendChild(document.createTextNode("Behavior: " + behavior.toString()));
                 visible = true;
             }
             infoview.appendChild(document.createElement("br"));

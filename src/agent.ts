@@ -10,6 +10,7 @@ namespace Game {
         calcUrgency(): number { return 1 }
         update() {}
         reset() {}
+        toString() : string { return getObjectName(this); }
         
         constructor(public agent: Agent) {
             this.agent = agent;
