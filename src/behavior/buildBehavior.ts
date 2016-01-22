@@ -46,7 +46,7 @@ namespace Game {
                 return 1000;
             }
             
-            return 0.9;
+            return this.agent.attributes.enthusiasm.getValue();
         }
         
         findBuildTargetPosition(template: MapTemplate): Point {
@@ -162,6 +162,7 @@ namespace Game {
                 //console.log("at build cell!");
                 next.cell.applyTemplate(next.cellTemplate);
                 this.building.isStarted = true;
+                this.agent.attributes.enthusiasm.update(5);
             } else {
                 //console.log("not at target");
             }

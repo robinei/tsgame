@@ -217,6 +217,7 @@ namespace Game {
         }
         
         evaluateNeeds(){
+            this.attributes.enthusiasm.update(-0.5);
             this.attributes.community.update(1);
             this.attributes.nutrition.update(1);
             this.attributes.comfort.update(1);
