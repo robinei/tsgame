@@ -53,7 +53,13 @@ namespace Game {
         
         constructor(cell: MapCell) {
             this.motionSpeed = Math.random() * 0.8 + 0.2;
-            this.behaviors = [new ExploreBehavior(), new RandomWalkBehavior(), new FollowWalkBehavior(), new ChopWoodBehavior()];
+            this.behaviors = [
+                new ExploreBehavior(),
+                new RandomWalkBehavior(),
+                new FollowWalkBehavior(),
+                new ChopWoodBehavior(),
+                new MakeCampfireBehavior()
+            ];
             for (var i = 0; i < this.behaviors.length; ++i) {
                 this.behaviors[i].agent = this;
             }
