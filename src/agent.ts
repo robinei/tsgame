@@ -34,6 +34,29 @@ namespace Game {
         type = InventoryItemType.Wood
     }
 
+    export interface Skin {
+        imageSource: (Direction) => string;
+    }
+    
+    export class RegularGuy implements Skin {
+        imageSource(direction: Direction) : string {
+            switch (direction) {
+                case Direction.North:
+                case Direction.NorthEast:
+                    return 'guy2b.png';
+                case Direction.East:
+                case Direction.SouthEast:
+                    return 'guy2l.png';
+                case Direction.South:
+                case Direction.SouthWest:
+                    return 'guy2f.png';
+                case Direction.West:
+                case Direction.NorthWest:
+                    return 'guy2r.png';
+            }
+        }
+    }
+
     export class Agent implements Entity {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
         motionSpeed: number = 1;
@@ -55,6 +78,7 @@ namespace Game {
         observant:number = 0;
         
         name: string = "";
+        skin: Skin = new RegularGuy()
         
         constructor(cell: MapCell) {
             this.motionSpeed = Math.random() * 0.8 + 0.2;

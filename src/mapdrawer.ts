@@ -66,22 +66,7 @@ namespace Game {
                         context.drawImage(cell.doodad.tileImage, clientX, clientY);
                     }
                     if (cell.agent) {
-                        var source = '';
-                        switch (cell.agent.direction){
-                            case Direction.North:
-                            case Direction.NorthEast:
-                                source = 'guy2b.png';break;
-                            case Direction.East:
-                            case Direction.SouthEast:
-                                source = 'guy2l.png';break;
-                            case Direction.South:
-                            case Direction.SouthWest:
-                                source = 'guy2f.png';break;
-                            case Direction.West:
-                            case Direction.NorthWest:
-                                source = 'guy2r.png';break; 
-                        }
-                        
+                        var source = cell.agent.skin.imageSource(cell.agent.direction);
                         context.drawImage(this.tileset.getTileImageByName(source), clientX, clientY);
                         context.fillStyle = "rgba(240, 240, 240, 1.0)"
                         context.font="9px Arial";                        
