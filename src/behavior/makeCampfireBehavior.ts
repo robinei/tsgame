@@ -67,11 +67,15 @@ namespace Game {
             if (GetItemOfTypeCount(this.agent, this.itemType) >= this.itemCount) {
                 return 0;
             }
-            this.cellWithItem = this.findCellWithItems();
-            if (this.cellWithItem == null) {
+            if (!this.updateCellWithItem()) {
                 return 0;
             }
             return 0.99;
+        }
+        
+        updateCellWithItem(): boolean {
+            this.cellWithItem = this.findCellWithItems();
+            return toBoolean(this.cellWithItem);
         }
         
         update() {
@@ -83,6 +87,7 @@ namespace Game {
             var availableItemCount = GetItemOfTypeCount(this.agent.cell, this.itemType);
             var takeItemCount = Math.min(desiredItemCount, availableItemCount);
             if (takeItemCount > 0) {
+                console.debug("Taking items");
                 for (; takeItemCount > 0; --takeItemCount) {
                     var item = RemoveItemOfType(this.agent.cell, this.itemType);
                     this.agent.cell.putItem(item);
@@ -92,6 +97,11 @@ namespace Game {
             }
             
             if (!this.agent.canMoveNow()) {
+                return;
+            }
+            
+            if (!this.updateCellWithItem()) {
+                console.log("No cell with wood");
                 return;
             }
             
@@ -121,6 +131,7 @@ namespace Game {
         
         reset() {
             this.campfire = null;
+            this.getStoredWoodBehavior.reset();            
         }
 
         findClosestCampfire(): MapCell {
@@ -136,8 +147,13 @@ namespace Game {
              return campfire;
         }
         
-        updateCampfire() {
+        updateCampfire(): boolean {
             this.campfire = this.findClosestCampfire();
+            return toBoolean(this.campfire);
+        }
+        
+        hasWood(): boolean {
+            return HasItemOfType(this.agent, InventoryItemType.Wood);
         }
 
         calcUrgency(): number {
@@ -145,7 +161,11 @@ namespace Game {
             if (agents[0] !== this.agent) {
                 return 0;
             }
-            this.updateCampfire();
+            if (this.updateCampfire()) {
+                console.debug("Found campfire");
+            } else {
+                console.debug("No campfire");
+            }
             return 3;
         }
         
@@ -153,6 +173,8 @@ namespace Game {
             if (!this.agent.cell) {
                 return;
             }
+            
+            this.getStoredWoodBehavior.update();
         }
 
     }
