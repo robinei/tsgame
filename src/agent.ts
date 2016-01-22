@@ -8,7 +8,7 @@ namespace Game {
     
     export class Behavior {
         agent: Agent;
-        urgency(): number { return 1 }
+        calcUrgency(): number { return 1 }
         update() {}
     }
 
@@ -68,14 +68,17 @@ namespace Game {
         chooseBehavior() {
             var sum = 0;
             
-            for (var i=0; i<this.behaviors.length; i++) {
-                sum += this.behaviors[i].urgency();
+            var urgencies = [];
+            for (var i=0; i < this.behaviors.length; i++) {
+                var urgency = this.behaviors[i].calcUrgency();
+                urgencies.push(urgency);
+                sum += urgency;
             }
             var value = Math.random();
             var index = -1;
             while(value >= 0 && index < this.behaviors.length){
                 index++;
-                value -= this.behaviors[index].urgency() / sum;
+                value -= urgencies[index] / sum;
             } 
             this.currentBehavior = this.behaviors[index];
             

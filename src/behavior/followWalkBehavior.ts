@@ -3,7 +3,7 @@ namespace Game {
         target: Agent = null;
         moveAction: MoveToPointAction = null;
                 
-        urgency(): number {
+        calcUrgency(): number {
             if(agents.length <= 1){
                 return 0;
             }

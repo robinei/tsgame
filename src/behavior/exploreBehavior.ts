@@ -2,7 +2,7 @@ namespace Game {
     export class ExploreBehavior extends Behavior {
         targetCell: MapCell = null;
         
-        urgency(): number {
+        calcUrgency(): number {
             var self = this;
             self.targetCell = null;
             self.agent.cell.forNeighboursUnbiased(10, function(cell: MapCell) {

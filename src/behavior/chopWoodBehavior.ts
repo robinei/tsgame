@@ -38,7 +38,7 @@ namespace Game {
              return tree;
         }
 
-        urgency():number {
+        calcUrgency(): number {
             return this.agent.restless * (this.agent.currentBehavior===this ? 2 : 1);
         }
         
