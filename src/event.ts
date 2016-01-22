@@ -1,7 +1,7 @@
 namespace Game {
     
     export interface Entity {
-        location: MapCell;
+        cell: MapCell;
     }
     
     /**
@@ -43,7 +43,7 @@ namespace Game {
     }
     
     export interface Event {
-        location: MapCell;
+        cell: MapCell;
         initiator: Entity;
         target?: Entity;
         medium?: Medium;

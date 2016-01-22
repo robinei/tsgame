@@ -10,7 +10,6 @@ namespace Game {
             this.path = null
             this.treeCell = null
             this.currentStep = 0
-            console.debug("Reset")
         }
 
         findPathToTree(){
@@ -49,11 +48,9 @@ namespace Game {
             }
 
             if (!this.agent.canMoveNow()) {
-                console.debug("Can't move")
                 return;
             }
 
-            console.debug("Empty? " + this.isEmptying)
             if (this.isEmptying){
                 this.empty()
                 return
@@ -64,57 +61,72 @@ namespace Game {
                     return;
             }
 
-            if (this.currentStep < this.path.length){
+            if (this.currentStep < this.path.length) {
                 console.debug("Moving")
-                var cell = map.getCellForPoint(this.path[this.currentStep]);
-                if (cell.canBeEntered()) {
-                    this.agent.moveTo(cell);
-                    ++this.currentStep;
-                }
+                this.moveTowardsTarget();
             } else if (this.treeCell.doodad instanceof Tree) {
-                console.debug("Chopping")
-                if (!this.agent.tryAddInventoryItem(new Wood())){
-                    console.debug("full")
-                    this.isEmptying = true;
-                    console.debug("Empty? " + this.isEmptying)
-                    this.reset()
-                    return
-                }
-                this.treeCell.doodad = null;
+               this.chopWood();
             } else {
                 this.reset();
                 this.isEmptying = true;
-                console.debug("Empty? " + this.isEmptying)
-                this.reset()
             }
             this.agent.restless  = Math.max(0, this.agent.restless-3);
         }
 
+        moveTowardsTarget(){
+            var point = this.path[this.currentStep]
+            var cell = map.getCell(point.x, point.y);
+
+            if (cell.canBeEntered()) {
+                this.agent.moveTo(cell);
+                ++this.currentStep;
+            }
+        }
+
+        chopWood(){
+             if (this.agent.hasRoomForInventoryItem(new Wood() )){
+                if (this.treeCell.doodad.tryHarvest()){
+                    this.agent.inventory.push(new Wood());
+                } else {
+                    this.reset();
+                }
+            } else {
+                this.reset();
+                this.isEmptying = true;
+                return
+            }
+        }
+
+        harvestTree(doodad: Doodad){
+            doodad.hitPoints--;
+
+            if (doodad.hitPoints <= 0){
+                doodad = null;
+            }
+        }
+
         empty(){
-            console.debug("Emptying")
-            console.debug("Storage point " + storageCell)
-            
             if (this.path == null){
-                this.path = map.calcPath(this.agent.cell.getPosition(), storageCell.getPosition(), false)
+                this.path = map.calcPath(this.agent.cell.getPosition(), storageCell.getPosition(), false);
             }
 
             if (this.currentStep < this.path.length) {
                 var cell = map.getCellForPoint(this.path[this.currentStep]);
                 if (cell.canBeEntered()) {
+                    console.debug("Moving to storage point : " + cell.getPosition() + " s : ")
                     this.agent.moveTo(cell);
                     ++this.currentStep;
                 }
             } else {
-                var item = this.agent.removeNextOfType(InventoryItemType.Wood)
+                console.debug("At storage point, emptying")
+                var item = this.agent.removeNextOfType(InventoryItemType.Wood);
                 if (item != null){
                     storageCell.putItem(item);
                     return;
                 }
                 
                 this.isEmptying = false;
-                this.reset()
-                    
-                console.debug("At storage point : p : " + this.agent.cell.getPosition() + " s : " + storageCell.getPosition())
+                this.reset();
             }
         }
 

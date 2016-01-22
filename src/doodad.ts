@@ -2,9 +2,21 @@ namespace Game {
     
 
     
-    export class Doodad {
+    export class Doodad implements Entity {
         cell: MapCell = null;
         tileImage: HTMLImageElement = null;
+        hitPoints = 10
+
+        tryHarvest() {
+            this.hitPoints--;
+
+            if (this.hitPoints < 0) {
+                this.cell.doodad = null
+                return false;
+            }
+
+            return true;
+        }
     }
     
     export class Tree extends Doodad {
