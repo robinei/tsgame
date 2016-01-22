@@ -61,6 +61,7 @@ namespace Game {
                 new ChopWoodBehavior(),
                 new MakeCampfireBehavior()
             ];
+
             for (var i = 0; i < this.behaviors.length; ++i) {
                 this.behaviors[i].agent = this;
             }

@@ -1,7 +1,11 @@
 namespace Game {
     
+    export enum ResourceType{
+        Berry,
+        Wood,
+        Rock
+    }
 
-    
     export class Doodad implements Entity {
         cell: MapCell = null;
         tileImage: HTMLImageElement = null;
@@ -19,23 +23,30 @@ namespace Game {
         }
     }
     
-    export class Tree extends Doodad {
+    export class Resource extends Doodad {
+        resourceType: ResourceType;
+    }
+    
+    export class Tree extends Resource {
         constructor() {
             super();
+            this.resourceType = ResourceType.Wood;
             this.tileImage = tileset.getTileImageByName('tree1.png');
         }
     }
     
-    export class Bush extends Doodad {
+    export class Bush extends Resource {
         constructor() {
             super();
+            this.resourceType = ResourceType.Berry;
             this.tileImage = tileset.getTileImageByName('bush1_with_berries.png');
         }
     }
     
-    export class Rocks extends Doodad {
+    export class Rocks extends Resource {
         constructor() {
             super();
+            this.resourceType = ResourceType.Rock;
             this.tileImage = tileset.getTileImageByName('rocks1.png');
         }
     }

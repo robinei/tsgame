@@ -1,41 +1,51 @@
 namespace Game {
-    export class ChopWoodBehavior extends Behavior {
-        path: Array<Point>;
-        tree: MapCell;
+    export function findResource(startCell: MapCell, targetResource: ResourceType, maxDistance: number) {
+        var resourceCell = null;
+        
+        startCell.forNeighbours(maxDistance, function (cell: MapCell): boolean {
+            if (cell.doodad === null) {
+                return true;
+            }
+            var resource = <Resource> cell.doodad;
+            if ( resource === null || resource.resourceType !== targetResource) {
+                return true;
+            }
+            
+            resourceCell = cell
+            return false;
+        });
+        
+        return resourceCell;
+    }
+    
+    export class HarvestBehavior extends Behavior {
+        resource: MapCell;
         isEmptying = false;
-        treeCell: MapCell;
-        currentStep = 1;
+        resourceCell: MapCell;
+        targetResource = ResourceType.Wood
+        movetoPoint: MoveToPointAction;
 
         reset(){
-            this.path = null
-            this.treeCell = null
-            this.currentStep = 0
+            this.movetoPoint = null;
+            this.resourceCell = null
         }
 
-        findPathToTree(){
-            this.treeCell = this.findClosestTree()
+        findPathToResource() {
+            this.findClosestResource();
 
-            if (this.treeCell == null){
+            if (this.resourceCell == null){
                 this.walkRandomly()
                 return false
             }
-
-            this.path = map.calcPath(this.agent.cell.getPosition(), this.treeCell.getPosition(), false)
+            
+            this.movetoPoint = new MoveToPointAction(this.agent, 0)
+            this.movetoPoint.setTarget(this.resourceCell.getPosition())
 
             return true
         }
 
-        findClosestTree(){
-            var tree;
-            this.agent.cell.forNeighbours(30, function(cell: MapCell) {
-                if (cell != null && cell.doodad instanceof Tree) {
-                    tree = cell;
-                    return false;
-                }
-                return true;
-             });
-
-             return tree;
+        findClosestResource(){
+            this.resourceCell = findResource(this.agent.cell, this.targetResource, 30);
         }
 
         calcUrgency(): number {
@@ -43,11 +53,7 @@ namespace Game {
         }
         
         update() {
-            if (!this.agent.cell) {
-                return;
-            }
-
-            if (!this.agent.canMoveNow()) {
+            if (!this.agent.cell || !this.agent.canMoveNow()) {
                 return;
             }
 
@@ -56,67 +62,48 @@ namespace Game {
                 return
             }
             
-            if (this.path == null){
-                if (!this.findPathToTree())
+            if (this.movetoPoint == null || this.movetoPoint.path == null) {
+                if (!this.findPathToResource()){
                     return;
+                }
             }
 
-            if (this.currentStep < this.path.length) {
-                console.debug("Moving")
-                this.moveTowardsTarget();
-            } else if (this.treeCell.doodad instanceof Tree) {
-               this.chopWood();
+            if (!this.movetoPoint.isDone()) {
+                this.movetoPoint.step()
+            } else if (this.resourceCell.doodad instanceof Tree) {
+               this.harvestResource();
             } else {
+                 console.error("Resource type wrong")
                 this.reset();
-                this.isEmptying = true;
             }
-            this.agent.restless  = Math.max(0, this.agent.restless-3);
+            this.agent.restless = Math.max(0, this.agent.restless-3);
         }
 
-        moveTowardsTarget(){
-            var point = this.path[this.currentStep]
-            var cell = map.getCell(point.x, point.y);
-
-            if (cell.canBeEntered()) {
-                this.agent.moveTo(cell);
-                ++this.currentStep;
-            }
-        }
-
-        chopWood(){
+        harvestResource(){
              if (this.agent.hasRoomForInventoryItem(new Wood() )){
-                if (this.treeCell.doodad.tryHarvest()){
+                if (this.resourceCell.doodad.tryHarvest()){
+                    console.debug("Harvesting")
                     this.agent.inventory.push(new Wood());
                 } else {
+                    console.debug("Resource empty")
                     this.reset();
                 }
             } else {
+                console.debug("No room in inventory")
                 this.reset();
                 this.isEmptying = true;
-                return
-            }
-        }
-
-        harvestTree(doodad: Doodad){
-            doodad.hitPoints--;
-
-            if (doodad.hitPoints <= 0){
-                doodad = null;
             }
         }
 
         empty(){
-            if (this.path == null){
-                this.path = map.calcPath(this.agent.cell.getPosition(), storageCell.getPosition(), false);
+            if (this.movetoPoint == null){
+                this.movetoPoint = new MoveToPointAction(this.agent, 0)
+                this.movetoPoint.setTarget(storageCell.getPosition())
             }
 
-            if (this.currentStep < this.path.length) {
-                var cell = map.getCellForPoint(this.path[this.currentStep]);
-                if (cell.canBeEntered()) {
-                    console.debug("Moving to storage point : " + cell.getPosition() + " s : ")
-                    this.agent.moveTo(cell);
-                    ++this.currentStep;
-                }
+            if (!this.movetoPoint.isDone()) {
+                console.debug("Returning to storage")
+                this.movetoPoint.step()
             } else {
                 console.debug("At storage point, emptying")
                 var item = this.agent.removeNextOfType(InventoryItemType.Wood);
