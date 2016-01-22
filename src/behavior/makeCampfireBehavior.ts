@@ -41,7 +41,7 @@ namespace Game {
              return tree;
         }
         
-        findClosestCampfire(): Campfire {
+        findClosestCampfire(): MapCell {
             var campfire;
             this.agent.cell.forNeighbours(30, function(cell: MapCell) {
                 if (cell != null && cell.doodad instanceof Campfire) {
@@ -53,10 +53,18 @@ namespace Game {
 
              return campfire;
         }
+        
+        updateCampfire() {
+            this.campfire = this.findClosestCampfire();
+        }
 
         calcUrgency(): number {
             // TODO check if there is a campfire, and if it's close to burning out
-            return this.agent.restless * (agents[0] === this.agent ? 4 : 0.1);
+            if (agents[0] !== this.agent) {
+                return 0;
+            }
+            this.updateCampfire();
+            return 3;
         }
         
         update() {
@@ -68,8 +76,11 @@ namespace Game {
                 return;
             }
 
-            console.debug("Campfire " + this.agent.name);
-            this.agent.restless  = Math.max(0, this.agent.restless-3);
+            if (this.campfire == null) {
+                this.campfire = this.findClosestCampfire();
+            }
+            //console.debug("Campfire " + this.agent.name);
+            //this.agent.restless  = Math.max(0, this.agent.restless-3);
         }
 
         moveTowardsTarget(){
