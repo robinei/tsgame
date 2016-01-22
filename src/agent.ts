@@ -96,6 +96,10 @@ namespace Game {
             this.name = getRandomName();
         }
         
+        getImageSource() : string {
+            return this.skin.imageSource(this.direction)
+        }
+
         getSightRange() : number {
             return this.baseSightRange;
         }

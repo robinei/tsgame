@@ -66,7 +66,7 @@ namespace Game {
                         context.drawImage(cell.doodad.tileImage, clientX, clientY);
                     }
                     if (cell.agent) {
-                        var source = cell.agent.skin.imageSource(cell.agent.direction);
+                        var source = cell.agent.getImageSource();
                         context.drawImage(this.tileset.getTileImageByName(source), clientX, clientY);
                         context.fillStyle = "rgba(240, 240, 240, 1.0)"
                         context.font="9px Arial";                        
