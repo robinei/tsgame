@@ -11,7 +11,7 @@ namespace Game {
             if(agents.length <= 1){
                 return 0;
             }
-            return this.agent.social * (this.agent.currentBehavior===this ? 2 : 1);
+            return this.agent.attributes.community.getValue() * (this.agent.currentBehavior===this ? 2 : 1);
         }
         
         update() {
@@ -26,6 +26,7 @@ namespace Game {
             }
             this.doMove();
             this.agent.restless++;
+            this.agent.attributes.comfort.increase(1);
         }
         
         pickTarget(): boolean {

@@ -52,23 +52,23 @@ namespace Game {
         comfort:Need;
         community:Need;
         
-        minNeedChange: number = 0.5;
-        rangeNeedChange: number = 0.4;
-        bonusNeedChange: number = 0.2;
+        private minNeedChange: number = 0.5;
+        private rangeNeedChange: number = 0.4;
+        private bonusNeedChange: number = 0.2;
         
-        setNeeds(nutrition:number, comfort:number, community:number) {
+        setNeeds() {
             this.nutrition = new Need("Nutrition", this,
-                (self:Need) => (n:number, a:AttributeComponent) => {
+                (self:Need) => (n:number) => {
                     var potential = 1-self.value;             
                 
-                    var bonus = a.strength.getValue() * this.bonusNeedChange;
+                    var bonus = self.attributes.strength.getValue() * this.bonusNeedChange;
                     var min = this.minNeedChange + bonus;
                     var range = this.rangeNeedChange - bonus;
                     
                     self.value = 1 - potential * self.scale(potential, n, min, range); 
                 },
-                (self:Need) => (n:number, a:AttributeComponent) => {
-                    var bonus = a.strength.getValue() * this.bonusNeedChange;
+                (self:Need) => (n:number) => {
+                    var bonus = self.attributes.strength.getValue() * this.bonusNeedChange;
                     var min = this.minNeedChange - bonus;
                     var range = this.rangeNeedChange + bonus;
                     
@@ -76,17 +76,17 @@ namespace Game {
                 });
                 
             this.comfort = new Need("Comfort", this,
-                (self:Need) => (n:number, a:AttributeComponent) => {
+                (self:Need) => (n:number) => {
                     var potential = 1-self.value;             
                 
-                    var bonus = a.charisma.getValue() * this.bonusNeedChange;
+                    var bonus = self.attributes.charisma.getValue() * this.bonusNeedChange;
                     var min = this.minNeedChange + bonus;
                     var range = this.rangeNeedChange - bonus;
                     
                     self.value = 1 - potential * self.scale(potential, n, min, range); 
                 },
-                (self:Need) => (n:number, a:AttributeComponent) => {
-                    var bonus = a.wisdom.getValue() * this.bonusNeedChange;
+                (self:Need) => (n:number) => {
+                    var bonus = self.attributes.wisdom.getValue() * this.bonusNeedChange;
                     var min = this.minNeedChange + bonus;
                     var range = this.rangeNeedChange - bonus;
                     
@@ -95,17 +95,17 @@ namespace Game {
                
                 
             this.community = new Need("Community", this,
-                (self:Need) => (n:number, a:AttributeComponent) => {
+                (self:Need) => (n:number) => {
                     var potential = 1-self.value;             
                 
-                    var bonus = a.charisma.getValue() * this.bonusNeedChange;
+                    var bonus = self.attributes.charisma.getValue() * this.bonusNeedChange;
                     var min = this.minNeedChange + bonus;
                     var range = this.rangeNeedChange - bonus;
                     
                     self.value = 1 - potential * self.scale(potential, n, min, range);                  
                 },
-                (self:Need) => (n:number, a:AttributeComponent) => {
-                    var bonus = a.social.getValue() * this.bonusNeedChange;
+                (self:Need) => (n:number) => {
+                    var bonus = self.attributes.social.getValue() * this.bonusNeedChange;
                     var min = this.minNeedChange + bonus;
                     var range = this.rangeNeedChange - bonus;
                     

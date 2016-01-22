@@ -72,6 +72,7 @@ namespace Game {
         behaviors: Array<Behavior> = [];
         urgencyThreshold: number = 10;
         
+        attributes:AttributeComponent = new AttributeComponent();
         social:number = 0;
         restless:number = 0;
         stressed:number = 0;
@@ -80,8 +81,14 @@ namespace Game {
         name: string = "";
         skin: Skin = new RegularGuy()
         
-        constructor(cell: MapCell) {
-            this.motionSpeed = Math.random() * 0.8 + 0.2;
+        constructor(cell: MapCell) {                        
+            this.attributes.setAttributes(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);
+            this.attributes.setSkills(0.5, 0.5, 0.5);
+            this.attributes.setHealth();
+            this.attributes.setNeeds();
+            
+            this.motionSpeed = Math.random() * 0.5 + this.attributes.dexterity.getValue() * 0.3 + 0.2;
+            
             this.behaviors = [
                 new ExploreBehavior(this),
                 new RandomWalkBehavior(this),
@@ -90,10 +97,11 @@ namespace Game {
                 new MakeCampfireBehavior(this),
                 new DeliverBehavior(this)
             ];
-
+            
+            this.name = getRandomName();
             this.moveTo(cell);
             this.chooseBehavior();
-            this.name = getRandomName();
+            
         }
         
         getImageSource() : string {
@@ -207,11 +215,16 @@ namespace Game {
         
         evaluateNeeds(){    
             this.social++;
+            this.attributes.community.increase(2);
+            this.attributes.nutrition.increase(2);
+            this.attributes.comfort.increase(1);
             if(this.anyPeople(this.cell, Distance.Close)) {
                 this.social = Math.max(0, this.social - 3);
+                this.attributes.community.decrease(4);
             }
             if(this.anyPeople(this.cell, Distance.Adjacent)) {
                 this.stressed += 1;
+                this.attributes.comfort.increase(1);
             }
         }
         

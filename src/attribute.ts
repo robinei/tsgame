@@ -2,8 +2,8 @@ namespace Game {
     export class Attribute {
         displayName: string;
         value: number = 0.5;
-        increase: (n: number, a:AttributeComponent) => void;
-        decrease: (n: number, a:AttributeComponent) => void;
+        increase: (n: number) => void;
+        decrease: (n: number) => void;
                 
         constructor(name:string, val?:number) {
             this.displayName = name;
@@ -52,15 +52,17 @@ namespace Game {
     }
     
     export class Need extends Attribute {
+        attributes:AttributeComponent;
         constructor(name:string, a:AttributeComponent,
-            inc?: (self:Need) => (n: number, a: AttributeComponent) => void,
-            dec?: (self:Need) => (n: number, a: AttributeComponent) => void) {
+            inc?: (self:Need) => (n: number) => void,
+            dec?: (self:Need) => (n: number) => void) {
             super(name, 0);
+            this.attributes = a;
             if (inc) {
-                this.increase = inc(this);
+                this.increase = (inc(this));
             }
             if (dec) {
-                this.decrease = dec(this);
+                this.decrease = (dec(this));
             }
         }
         getValue() {
