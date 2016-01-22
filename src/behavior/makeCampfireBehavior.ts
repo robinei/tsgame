@@ -44,11 +44,10 @@ namespace Game {
         
         cellWithItem: MapCell;
         
-        constructor(public itemType: InventoryItemType, public itemCount: number, agent: Agent) {
-            super();
+        constructor(agent: Agent, public itemType: InventoryItemType, public itemCount: number) {
+            super(agent);
             this.itemType = itemType;
             this.itemCount = itemCount;
-            this.agent = agent;
         }
         
         findCellWithItems(): MapCell {
@@ -112,8 +111,15 @@ namespace Game {
     export class MakeCampfireBehavior extends Behavior {
         
         campfire: MapCell;
+        getStoredWoodBehavior: Behavior;
 
-        reset(){
+        constructor(agent: Agent) {
+            super(agent);
+            this.getStoredWoodBehavior = new GetStoredItemsBehavior(
+                agent, InventoryItemType.Wood, 2);
+        }
+        
+        reset() {
             this.campfire = null;
         }
 

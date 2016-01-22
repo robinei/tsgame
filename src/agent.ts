@@ -7,10 +7,13 @@ namespace Game {
     }
     
     export class Behavior {
-        agent: Agent;
         calcUrgency(): number { return 1 }
         update() {}
         reset() {}
+        
+        constructor(public agent: Agent) {
+            this.agent = agent;
+        }
     }
 
     export enum InventoryItemType {
@@ -55,16 +58,13 @@ namespace Game {
         constructor(cell: MapCell) {
             this.motionSpeed = Math.random() * 0.8 + 0.2;
             this.behaviors = [
-                new ExploreBehavior(),
-                new RandomWalkBehavior(),
-                new FollowWalkBehavior(),
-                new HarvestBehavior(),
-                new MakeCampfireBehavior()
+                new ExploreBehavior(this),
+                new RandomWalkBehavior(this),
+                new FollowWalkBehavior(this),
+                new HarvestBehavior(this),
+                new MakeCampfireBehavior(this)
             ];
 
-            for (var i = 0; i < this.behaviors.length; ++i) {
-                this.behaviors[i].agent = this;
-            }
             this.moveTo(cell);
             this.chooseBehavior();
             this.name = getRandomName();
