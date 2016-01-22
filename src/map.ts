@@ -25,10 +25,14 @@ namespace Game {
     }
     
     export interface CellTemplate {
+        // these properties will be applied to cells
         walkable?: boolean;
         baseTile?: number;
         seen?: boolean;
-        doodadFactory?: DoodadFactory
+        doodadFactory?: DoodadFactory;
+        
+        // template-specific properties (don't try to apply to a cell)
+        buildPriority?: number;
     }
     
     export class MapCell implements ItemHolder {
@@ -40,7 +44,7 @@ namespace Game {
         
         walkable: boolean;
         baseTile: number;
-        seen: boolean;
+        seen: boolean = false;
         
         inventory = new Array<InventoryItem>();
         
@@ -111,21 +115,24 @@ namespace Game {
             return this.walkable && !this.agent;
         }
         
-        applyDefaultTemplate() {
-            this.walkable = true;
-            this.baseTile = -1;
-        }
-        
         applyTemplate(template: CellTemplate) {
-            this.applyDefaultTemplate();
-            if (template.baseTile !== undefined) { this.baseTile = template.baseTile; }
-            if (template.walkable !== undefined) { this.walkable = template.walkable; }
+            this.baseTile = valueOrDefault(template.baseTile, -1);
+            this.walkable = valueOrDefault(template.walkable, true);
             if (template.doodadFactory !== undefined) {
                 this.doodad = template.doodadFactory();
-                this.doodad.cell = this
-            } else {
+                this.doodad.cell = this;
+            } else if (this.doodad) {
+                removeFromArray(doodads, this.doodad);
+                this.doodad.cell = null;
                 this.doodad = null;
             }
+        }
+        
+        compatibleWithTemplate(template: CellTemplate): boolean {
+            if (valueOrDefault(template.baseTile, -1) !== this.baseTile) { return false; }
+            if (valueOrDefault(template.walkable, true) !== this.walkable) { return false; }
+            if (template.doodadFactory && !this.doodad) { return false; } // TODO: ke?
+            return true;
         }
     }
     
@@ -134,6 +141,10 @@ namespace Game {
         width: number;
         height: number;
         cellsTemplates: CellTemplate[];
+        
+        getCellTemplate(x: number, y: number) {
+            return this.cellsTemplates[y*this.width + x];
+        }
         
         constructor(width: number, height: number, cellTemplates: CellTemplate[]) {
             if (width*height != cellTemplates.length) {

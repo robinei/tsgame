@@ -19,6 +19,16 @@ namespace Game {
        return val;
     }
     
+    // only removes one value
+    export function removeFromArray<T>(array: Array<T>, value: T): boolean {
+        var i = array.indexOf(value);
+        if (i < 0) {
+            return false;
+        }
+        array.splice(i, 1);
+        return true;
+    }
+    
     // Fisher-Yates
     export function shuffleArray<T>(array: Array<T>): void {
         var currentIndex = array.length;

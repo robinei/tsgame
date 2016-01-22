@@ -45,6 +45,38 @@ namespace Game {
         }
     }
 
+    export class Rect {
+        x: number = 0;
+        y: number = 0;
+        width: number = 0;
+        height: number = 0;
+        
+        x1() : number {
+            return this.x + this.width;
+        }
+        y1() : number {
+            return this.y + this.height;
+        }
+        
+        getPosition(): Point {
+            return new Point(this.x, this.y);
+        }
+        
+        constructor(x: number, y: number, width: number, height: number) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+        
+        intersects(r: Rect): boolean {
+            return !(r.x > this.x1() || 
+                     r.x1() < this.x || 
+                     r.y > this.y1() ||
+                     r.y1() < this.y);
+        }
+    }
+
     export function sigNum(num: number): number {
         if (num < 0) {
             return -1;

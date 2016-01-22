@@ -97,7 +97,8 @@ namespace Game {
                 new FollowWalkBehavior(this),
                 new HarvestBehavior(this),
                 new MakeCampfireBehavior(this),
-                new DeliverBehavior(this)
+                new DeliverBehavior(this),
+                new BuildBehavior(this),
             ];
             
             this.name = getRandomName();

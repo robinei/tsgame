@@ -104,19 +104,30 @@ namespace Game {
         }
     }
     
-    function generateMap() {
+    export namespace CellTemplates {
         function CT(baseTileName: string, template?: CellTemplate) {
             template = template || {};
             template.baseTile = tileset.getTileIndex(baseTileName);
             return template;
         }
-        var X = CT('wall1.png', {walkable: false});
-        var f = CT('floor1.png');
-        var o = <CellTemplate>{};
-        var g = CT('grass1.png', { seen: false });
-        var t = CT('grass1.png', { doodadFactory: () => { return new Tree(); }});
-        var b = CT('grass1.png', { doodadFactory: () => { return new Bush(); }});
-        var r = CT('grass1.png', { doodadFactory: () => { return new Rocks(); }});
+        
+        export var Default = <CellTemplate>{};
+        export var Wall = CT('wall1.png', { walkable: false, buildPriority: 0 });
+        export var Floor = CT('floor1.png', { buildPriority: 1 });
+        export var Grass = CT('grass1.png', {});
+        export var Tree = CT('grass1.png', { doodadFactory: () => { return new Game.Tree(); }});
+        export var Bush = CT('grass1.png', { doodadFactory: () => { return new Game.Bush(); }});
+        export var Rock = CT('grass1.png', { doodadFactory: () => { return new Game.Rocks(); }});
+    }
+    
+    function generateMap() {
+        var X = CellTemplates.Wall;
+        var f = CellTemplates.Floor;
+        var g = CellTemplates.Grass;
+        var t = CellTemplates.Tree;
+        var b = CellTemplates.Bush;
+        var r = CellTemplates.Rock;
+        
         var randomTemplatePicker = new RandomTemplatePicker(
             [ g, t, b, r ],
             [ 50, 2, 1, 1]);
@@ -127,20 +138,6 @@ namespace Game {
                 map.applyCellTemplate(template, x, y);
             }
         }
-        
-        var houseTemplate = new MapTemplate(10, 10, [
-            X,X,X,X,X,X,X,X,X,X,
-            X,f,f,f,f,f,f,f,f,X,
-            X,f,f,f,f,f,f,f,f,X,
-            X,f,f,f,f,f,f,f,f,X,
-            X,f,f,f,f,f,f,f,f,X,
-            X,f,f,f,f,f,f,f,f,X,
-            X,X,X,X,f,f,X,X,X,X,
-            g,g,g,t,f,f,t,g,g,g,
-            g,g,g,t,f,f,t,g,g,g,
-            g,g,g,t,f,f,t,g,g,g,
-        ]);
-        map.applyTemplate(houseTemplate, 30, 20);
         
         while (agents.length < 20 ) {
             var cell = map.randomCell();

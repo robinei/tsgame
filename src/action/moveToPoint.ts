@@ -44,10 +44,17 @@ namespace Game {
         getNextCell(): MapCell {
             var from = this.agent.getPosition();
             var path = map.calcPath(from, this.target, false);
-            if (!path || path.length <= 1) {
-                return null;
+            var cell = null;
+            if (path && path.length > 1) {
+                cell = map.getCellForPoint(path[1]);
             }
-            return map.getCellForPoint(path[1]);
+            if (!cell.canBeEntered()) {
+                var path = map.calcPath(from, this.target, true);
+                if (path && path.length > 1) {
+                    cell = map.getCellForPoint(path[1]);
+                }
+            }
+            return cell;
             
             /*if (this.path == null || this.pathIndex > 4) {
                 var from = this.agent.getPosition();

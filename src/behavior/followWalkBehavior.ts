@@ -50,7 +50,7 @@ namespace Game {
         
         reset() {
             this.target = null;
-            if (this.moveAction != null) {
+            if (this.moveAction !== null) {
                 this.moveAction.setTarget(null);
             }
         }
