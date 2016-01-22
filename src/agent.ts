@@ -10,6 +10,7 @@ namespace Game {
         agent: Agent;
         calcUrgency(): number { return 1 }
         update() {}
+        reset() {}
     }
 
     export enum InventoryItemType {
@@ -79,9 +80,11 @@ namespace Game {
             while(value >= 0 && index < this.behaviors.length){
                 index++;
                 value -= urgencies[index] / sum;
-            } 
+            }
+            if (this.currentBehavior && this.currentBehavior !== this.behaviors[index]) {
+                this.currentBehavior.reset();
+            }
             this.currentBehavior = this.behaviors[index];
-            
         }
                 
         getPosition(): Point {
