@@ -24,7 +24,7 @@ namespace Game {
             this.agent.restless++;
         }
         
-        pickTarget():boolean {
+        pickTarget(): boolean {
             if(agents.length <= 1) {
                 return false;
             }

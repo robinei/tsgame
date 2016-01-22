@@ -30,27 +30,34 @@ namespace Game {
             if (this.isDone()) {
                 return false;
             }
-            var cell = this.findPath(this.agent.getPosition());
-            if(cell) {
+            var cell = this.getNextCell();
+            if (cell) {
                 if (!cell.canBeEntered()) {
                     // TODO(robin): choose alternative path
                     return true;
                 }
                 this.agent.moveTo(cell);
-                this.pathIndex++;
             }
             return !this.isDone();
         }
         
-        findPath(point: Point): MapCell {
-            if(this.path == null || this.pathIndex > Distance.Close) {
-                this.path = map.calcPath(point, this.target, false);
+        getNextCell(): MapCell {
+            var from = this.agent.getPosition();
+            var path = map.calcPath(from, this.target, false);
+            if (!path || path.length <= 1) {
+                return null;
+            }
+            return map.getCellForPoint(path[1]);
+            
+            /*if (this.path == null || this.pathIndex > 4) {
+                var from = this.agent.getPosition();
+                this.path = map.calcPath(from, this.target, false);
                 this.pathIndex = 1;
             }
             if (this.path == null || this.pathIndex >= this.path.length) {
                 return null;
             }
-            return map.getCellForPoint(this.path[this.pathIndex])
+            return map.getCellForPoint(this.path[this.pathIndex++])*/
         }
     }
 }

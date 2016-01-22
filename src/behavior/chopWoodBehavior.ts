@@ -66,10 +66,10 @@ namespace Game {
 
             if (this.currentStep < this.path.length){
                 console.debug("Moving")
-                var point = this.path[this.currentStep++]
-                var cell = map.getCell(point.x, point.y);
+                var cell = map.getCellForPoint(this.path[this.currentStep]);
                 if (cell.canBeEntered()) {
                     this.agent.moveTo(cell);
+                    ++this.currentStep;
                 }
             } else if (this.treeCell.doodad instanceof Tree) {
                 console.debug("Chopping")
@@ -98,9 +98,12 @@ namespace Game {
                 this.path = map.calcPath(this.agent.cell.getPosition(), storageCell.getPosition(), false)
             }
 
-            if (this.currentStep < this.path.length){
-                var point = this.path[this.currentStep++]
-                this.agent.moveTo(map.getCell(point.x, point.y))
+            if (this.currentStep < this.path.length) {
+                var cell = map.getCellForPoint(this.path[this.currentStep]);
+                if (cell.canBeEntered()) {
+                    this.agent.moveTo(cell);
+                    ++this.currentStep;
+                }
             } else {
                 var item = this.agent.removeNextOfType(InventoryItemType.Wood)
                 if (item != null){

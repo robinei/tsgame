@@ -11,13 +11,13 @@ namespace Game {
     }
 
     export enum Distance {
-        Zero = 1,
-        Adjacent = 2,
-        Close = 4,
-        Short = 8,
-        Medium = 16,
-        Long = 32,
-        TooFar = 64
+        Zero = 0,
+        Adjacent = 1,
+        Close = 2,
+        Short = 4,
+        Medium = 8,
+        Long = 16,
+        TooFar = 32
     }
     
     export interface DoodadFactory {
