@@ -6,6 +6,8 @@ namespace Game {
         }
     }
     
+    export var LOGTAG_BEHAVIOR: string = "Behavior";
+    
     export class Behavior {
         calcUrgency(): number { return 1 }
         update() {}
@@ -63,27 +65,28 @@ namespace Game {
         }
     }
 
-    export class Agent implements Entity {
+    export class Agent extends Entity {
         // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
         motionSpeed: number = 1;
         motionPoints: number = 1;
         baseSightRange: number = 5;
         direction: Direction = Direction.North;
         carryCapacity: number = 20;
-
+        
         inventory = new Array<InventoryItem>();
 
-        cell: MapCell = null;
         currentBehavior: Behavior = null;
         behaviors: Array<Behavior> = [];
         urgencyThreshold: number = 10;
         
-        attributes:AttributeComponent = new AttributeComponent();
+        attributes:AttributeComponent = new AttributeComponent(this);
                 
-        name: string = "";
         skin: Skin = new RegularGuy()
         
-        constructor(cell: MapCell) {                        
+        consoleLogger: ConsoleLogger = new ConsoleLogger(this);
+        
+        constructor(cell: MapCell) {
+            super();
             this.attributes.setAttributes(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);
             this.attributes.setSkills(0.5, 0.5, 0.5);
             this.attributes.setHealth();
@@ -101,7 +104,7 @@ namespace Game {
                 new BuildBehavior(this),
             ];
             
-            this.name = getRandomName();
+            this.displayName = getRandomName();
             this.moveTo(cell);
             this.chooseBehavior();
             

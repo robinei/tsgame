@@ -70,7 +70,7 @@ namespace Game {
                         context.drawImage(this.tileset.getTileImageByName(source), clientX, clientY);
                         context.fillStyle = "rgba(240, 240, 240, 1.0)"
                         context.font="9px Arial";                        
-                        var agentName = cell.agent.name;
+                        var agentName = cell.agent.displayName;
                         var strWidth = context.measureText(agentName).width;
                         context.fillText(agentName, 
                             clientX + 0.5 * (TILE_DIM - strWidth),

@@ -6,10 +6,9 @@ namespace Game {
         Rock
     }
 
-    export class Doodad implements Entity {
-        cell: MapCell = null;
+    export class Doodad extends Entity {
         tileImage: HTMLImageElement = null;
-        hitPoints = 10
+        hitPoints = 10;
 
         tryHarvest() {
             this.hitPoints--;
@@ -32,6 +31,7 @@ namespace Game {
             super();
             this.resourceType = ResourceType.Wood;
             this.tileImage = tileset.getTileImageByName('tree1.png');
+            this.displayName = "tree";
         }
     }
     
@@ -40,6 +40,7 @@ namespace Game {
             super();
             this.resourceType = ResourceType.Berry;
             this.tileImage = tileset.getTileImageByName('bush1_with_berries.png');
+            this.displayName = "bush";
         }
     }
     
@@ -48,6 +49,7 @@ namespace Game {
             super();
             this.resourceType = ResourceType.Rock;
             this.tileImage = tileset.getTileImageByName('rocks1.png');
+            this.displayName = "rocks";
         }
     }
     
@@ -61,6 +63,7 @@ namespace Game {
             this.tileImage = tileset.getTileImageByName('campfire_off.png');
             this.fuelCount = 10;
             this.cell = cell;
+            this.displayName = "campfire";
         }
         
         isLit(): boolean {

@@ -85,7 +85,7 @@ namespace Game {
                     this.reset();
                 }
             } else {
-                console.debug("Inventory full...." +  this.agent.name)
+                console.debug("Inventory full...." +  this.agent.displayName)
             }
         }
 

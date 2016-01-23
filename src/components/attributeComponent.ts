@@ -1,4 +1,6 @@
 namespace Game {
+    export var LOGTAG_ATTRIBUTE: string = "Attribute";
+    
     export class AttributeComponent {
         strength:Attribute;
         dexterity:Attribute;
@@ -7,13 +9,19 @@ namespace Game {
         wisdom:Attribute;
         charisma:Attribute;
         
+        entity: Entity;
+        
+        constructor(entity: Entity) {
+            this.entity = entity;
+        }
+        
         setAttributes(str:number, dex:number, con:number, int:number, wis:number, cha:number) {
-            this.strength = new Attribute("Strength", str);
-            this.dexterity = new Attribute("Dexterity", dex);
-            this.constitution = new Attribute("Constitution", con);
-            this.intelligence = new Attribute("Intelligence", int);
-            this.wisdom = new Attribute("Wisdom", wis);
-            this.charisma = new Attribute("Charisma", cha);
+            this.strength = new Attribute(this, "Strength", str);
+            this.dexterity = new Attribute(this, "Dexterity", dex);
+            this.constitution = new Attribute(this, "Constitution", con);
+            this.intelligence = new Attribute(this, "Intelligence", int);
+            this.wisdom = new Attribute(this, "Wisdom", wis);
+            this.charisma = new Attribute(this, "Charisma", cha);
         }
         
         vitality:Health;

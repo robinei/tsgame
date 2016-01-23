@@ -139,7 +139,7 @@ namespace Game {
             }
         }
         
-        while (agents.length < 20 ) {
+        while (agents.length < 5 ) {
             var cell = map.randomCell();
             if (!cell.canBeEntered()) {
                 continue;
@@ -148,6 +148,7 @@ namespace Game {
             agent.motionSpeed = Math.random() * 0.8 + 0.2;
             agents.push(agent);
         }
+        agents[0].consoleLogger.setEnabled(true, LOGTAG_BEHAVIOR, LOGTAG_ATTRIBUTE);
 // Activates zombie-wonkies:
 //        agents[0].skin = new WonkeySkin()
 //        agents[0].behaviors = [ new KillBehavior(agents[0]) ];

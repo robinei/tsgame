@@ -4,7 +4,7 @@ namespace Game {
         moveAction: MoveToPointAction = null;
                 
         toString(): string {
-            return super.toString() + (this.target? "(Target: " + this.target.name + ")" : "")
+            return super.toString() + (this.target? "(Target: " + this.target.displayName + ")" : "")
         }
         
         calcUrgency(): number {

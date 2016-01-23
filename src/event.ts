@@ -1,9 +1,5 @@
 namespace Game {
     
-    export interface Entity {
-        cell: MapCell;
-    }
-    
     /**
      * medium: an intervening agency, means, or instrument 
      * by which something is conveyed or accomplished

@@ -6,14 +6,19 @@ namespace Game {
         decrease: (n: number) => void;
         update: (n:number) => void;
         updateBonus: () => number;
+        attributes: AttributeComponent;
                 
-        constructor(name: string, val?: number, updateBonus?: ()=> number) {
+        constructor(a: AttributeComponent, name: string, val?: number, updateBonus?: ()=> number) {
+            this.attributes = a;
             this.displayName = name;
             this.value = val;
             this.updateBonus = updateBonus || (() => 0);
             
             this.update = (n: number)  => {
-                this.value = this.change(this.value, this.updateBonus(), n);
+                var newVal = this.change(this.value, this.updateBonus(), n);
+                this.attributes.entity.log(LOGTAG_ATTRIBUTE,
+                    this.displayName + " " + this.value + " -> " + newVal);
+                this.value = newVal;
             }
         }
         
@@ -31,18 +36,15 @@ namespace Game {
     }
     
     export class Health extends Attribute {
-        attributes:AttributeComponent;
         constructor(name:string, a:AttributeComponent, baseCalc: (a: AttributeComponent) => number) {
-            super(name, baseCalc(a));
+            super(a, name, baseCalc(a));
         }
     }
     
     export class Skill extends Attribute {
-        attributes:AttributeComponent;
         attrCalc: (a: AttributeComponent) => number;
         constructor(name:string, v:number, a:AttributeComponent, c: (a: AttributeComponent) => number) {
-            super(name, v);
-            this.attributes = a;
+            super(a, name, v);
             this.attrCalc = c;
         }
         getValue() {
@@ -51,10 +53,8 @@ namespace Game {
     }
     
     export class Need extends Attribute {
-        attributes:AttributeComponent;
         constructor(name:string, a:AttributeComponent, updateBonus?: (self: Need) => () => number) {
-            this.attributes = a;
-            super(name, 0, updateBonus ? updateBonus(this) : null);
+            super(a, name, 0, updateBonus ? updateBonus(this) : null);
         }
         getValue() {
             return this.value;
