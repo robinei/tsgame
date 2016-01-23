@@ -15,9 +15,6 @@ namespace Game {
         }
         
         update() {
-            if (!this.agent.cell || !this.agent.canMoveNow()) {
-                return;
-            }
             if (!this.moveAction) {
                 this.moveAction = new MoveToPointAction(this.agent);
             }

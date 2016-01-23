@@ -56,7 +56,7 @@ namespace Game {
         }
         if (cell && cell.agent) {
             var agent = cell.agent;
-            var behavior = agent.currentBehavior;
+            var behavior = agent.getBehavior();
             infoview.appendChild(document.createTextNode("Id: " + agents.indexOf(agent)));
             infoview.appendChild(document.createElement("br"));
             if (behavior) {
@@ -145,7 +145,6 @@ namespace Game {
                 continue;
             }
             var agent = new Agent(cell);
-            agent.motionSpeed = Math.random() * 0.8 + 0.2;
             agents.push(agent);
         }
         agents[0].consoleLogger.setEnabled(true, LOGTAG_BEHAVIOR, LOGTAG_ATTRIBUTE);
@@ -160,6 +159,9 @@ namespace Game {
     }
 
     function updateWorld() {
+        for (var i = 0; i < doodads.length; ++i) {
+            doodads[i].update();
+        }
         for (var i = 0; i < agents.length; ++i) {
             agents[i].update();
         }

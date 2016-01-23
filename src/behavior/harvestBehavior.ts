@@ -48,7 +48,7 @@ namespace Game {
         }
 
         calcUrgency(): number {
-            if (this.agent.getTotalInventoryWeight() == this.agent.carryCapacity){
+            if (this.agent.getTotalInventoryWeight() >= this.agent.carryCapacity){
                 return 0
             }
 
@@ -56,7 +56,7 @@ namespace Game {
         }
         
         update() {
-            if (!this.agent.cell || !this.agent.canMoveNow() || this.agent.getTotalInventoryWeight() == this.agent.carryCapacity) {
+            if (this.agent.getTotalInventoryWeight() >= this.agent.carryCapacity) {
                 return;
             }
             
@@ -69,9 +69,9 @@ namespace Game {
             if (!this.movetoPoint.isDone()) {
                 this.movetoPoint.step()
             } else if (this.resourceCell.doodad instanceof Tree) {
-               this.harvestResource();
+                this.harvestResource();
             } else {
-                 console.error("Resource type wrong")
+                this.agent.log(LOGTAG_BEHAVIOR, "Resource type wrong");
                 this.reset();
             }
             this.agent.attributes.enthusiasm.update(3);
@@ -85,7 +85,7 @@ namespace Game {
                     this.reset();
                 }
             } else {
-                console.debug("Inventory full...." +  this.agent.displayName)
+                this.agent.log(LOGTAG_BEHAVIOR, "Inventory full...");
             }
         }
 

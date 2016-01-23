@@ -10,9 +10,7 @@ namespace Game {
                 return;
             }
             this.agent.attributes.comfort.update(-10);
-            if (!this.agent.canMoveNow()) {
-                return;
-            }
+            
             for (var tries = 0; tries < 10; ++tries) {
                 var direction = Math.floor(Math.random() * 8);
                 var cell = this.agent.cell.getNeighbour(direction);

@@ -1,24 +1,25 @@
 namespace Game {
     export class Action {
+        entity: Entity;
+        
+        constructor(entity: Entity) {
+            this.entity = entity;
+        }
+
+                
+        isDone(): boolean {
+            return false;
+        }
         // return true as long as we want to continue to be run
         step() : boolean {
             return true;
         }
-    }
-    
-    export var LOGTAG_BEHAVIOR: string = "Behavior";
-    
-    export class Behavior {
-        calcUrgency(): number { return 1 }
-        update() {}
-        reset() {}
-        toString() : string { return getObjectName(this); }
-        
-        constructor(public agent: Agent) {
-            this.agent = agent;
+        // callbacks
+        abort() {
+            
         }
     }
-
+    
     export enum InventoryItemType {
         Wood,
         Food,
@@ -66,33 +67,26 @@ namespace Game {
     }
 
     export class Agent extends Entity {
-        // motionSpeed is added to motionPoints every turn. 1 is max motionSpeed and allows the agent to move each turn
-        motionSpeed: number = 1;
-        motionPoints: number = 1;
         baseSightRange: number = 5;
         direction: Direction = Direction.North;
         carryCapacity: number = 20;
         
         inventory = new Array<InventoryItem>();
 
-        currentBehavior: Behavior = null;
         behaviors: Array<Behavior> = [];
         urgencyThreshold: number = 10;
         
-        attributes:AttributeComponent = new AttributeComponent(this);
-                
         skin: Skin = new RegularGuy()
         
         consoleLogger: ConsoleLogger = new ConsoleLogger(this);
         
         constructor(cell: MapCell) {
             super();
+            this.attributes = new AttributeComponent(this);
             this.attributes.setAttributes(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);
             this.attributes.setSkills(0.5, 0.5, 0.5);
             this.attributes.setHealth();
             this.attributes.setNeeds();
-            
-            this.motionSpeed = Math.random() * 0.5 + this.attributes.dexterity.getValue() * 0.3 + 0.2;
             
             this.behaviors = [
                 new ExploreBehavior(this),
@@ -103,11 +97,10 @@ namespace Game {
                 new DeliverBehavior(this),
                 new BuildBehavior(this),
             ];
+            this.behaviorSelector = new BehaviorSelector(this);
             
             this.displayName = getRandomName();
             this.moveTo(cell);
-            this.chooseBehavior();
-            
         }
         
         getImageSource() : string {
@@ -117,43 +110,7 @@ namespace Game {
         getSightRange() : number {
             return this.baseSightRange;
         }
-        
-        setBehavior(behavior: Behavior) {
-            if (this.currentBehavior !== behavior) {
-                this.currentBehavior && this.currentBehavior.reset();
-                this.currentBehavior = behavior;
-            }
-        }
-        
-        chooseBehavior() {
-            var candidates = this.behaviors.map(
-                (b) => <any>{
-                    behavior: b,
-                    urgency: b.calcUrgency() + (b === this.currentBehavior ? 0.5 : 0)
-                });
-            var max = Math.max.apply(Math, candidates.map((c) => c.urgency));
-            this.urgencyThreshold += (max * 0.80 - this.urgencyThreshold) * 0.10
-            if (this.currentBehavior && this.behaviors.indexOf(this.currentBehavior) !== -1) {
-                var currentBehaviorUrgency = candidates[this.behaviors.indexOf(this.currentBehavior)].urgency;
-                var treshold = this.urgencyThreshold;
-                if (currentBehaviorUrgency >= treshold) {
-                    candidates = candidates.filter((c) => c.urgency >= treshold);
-                }
-            }
-
-            var sum = candidates.map((c) => c.urgency).reduce((prev, current) => prev + current);
-            var value = Math.random() * sum;
-            this.setBehavior(
-                candidates.reduce(function(prev, current) {
-                    if (prev.urgency > value) {
-                        return prev;  // Selected behavior
-                    } else {
-                        value -= prev.urgency;
-                        return current;  // Candidate behavior
-                    }
-                }).behavior);
-        }
-                
+                        
         getPosition(): Point {
             return this.cell.getPosition();
         }
@@ -166,10 +123,6 @@ namespace Game {
                 this.cell.agent = null;
                 this.cell = null;
             }
-        }
-
-        canMoveNow(): boolean {
-            return this.motionPoints >= 1;
         }
 
         moveTo(cell: MapCell) {
@@ -189,64 +142,14 @@ namespace Game {
             this.removeFromMap();
             this.cell = cell;
             cell.agent = this;
-            
-            // don't reduce motionPoints to 0 when moving, but allow it to retain some until next turn
-            // so that the motion will in average reflect the actual motionSpeed over time
-            this.motionPoints -= 1;
-            if (this.motionPoints < 0) {
-                this.motionPoints = 0;
-            }
-            
+                        
             // see all cells around the new position
             cell.forNeighbours(this.getSightRange(), function(cell: MapCell) {
                 cell.seen = true;
                 return true;
             });
         }
-        
-        update() {
-            this.motionPoints += this.motionSpeed * this.calcStaminaRegain();
-            
-            this.evaluateNeeds();
-            this.chooseBehavior();
-            
-            if (this.currentBehavior) {
-                this.currentBehavior.update();
-            }
-            
-            if (this.motionPoints > 1) {
-                this.motionPoints = 1;
-            }
-        }
-        
-        evaluateNeeds(){
-            this.attributes.enthusiasm.update(-0.5);
-            this.attributes.community.update(1);
-            this.attributes.nutrition.update(1);
-            this.attributes.comfort.update(1);
-            if(this.anyPeople(this.cell, Distance.Close)) {
-                this.attributes.community.update(-10);
-            }
-            if(this.anyPeople(this.cell, Distance.Adjacent)) {
-                this.attributes.comfort.update(1);
-            }
-        }
-        
-        anyPeople(cell: MapCell, range: Distance):boolean {
-            var foundPerson = false;
-            cell.forNeighbours(range,
-                ((self: Agent)=>
-                    (cell: MapCell) => {
-                        if(cell.agent && cell.agent != self) {
-                            foundPerson = true;
-                            return false;
-                        }
-                        return true;
-                    })
-                (this));
-            return foundPerson;
-	   }
-
+                
         getTotalInventoryWeight()
         {
             var weight = 0

@@ -96,10 +96,6 @@ namespace Game {
                 return;
             }
             
-            if (!this.agent.canMoveNow()) {
-                return;
-            }
-            
             if (!this.updateCellWithItem()) {
                 //console.log("No cell with wood");
                 return;
@@ -154,7 +150,7 @@ namespace Game {
         updateCampfire(): boolean {
             this.campfire = this.findClosestCampfire();
             if (this.campfire) {
-                console.log("camp update");
+                this.agent.log(LOGTAG_BEHAVIOR, "found campfire");
             }
             return toBoolean(this.campfire);
         }
@@ -193,19 +189,15 @@ namespace Game {
         }
         
         update() {
-            console.debug("campfire update");
+            this.agent.log(LOGTAG_BEHAVIOR, "making campfire");
             if (this.delegateBehavior) {
                 //console.debug("campfire delegate to " + typeof(this.delegateBehavior));
                 this.delegateBehavior.update();
                 return;
             }
             
-            if (!this.agent.canMoveNow()) {
-                return;
-            }
-            
             if (toBoolean(this.campfire) && !this.campfire.isLit()) {
-                console.log("lighting camp update");
+                this.agent.log(LOGTAG_BEHAVIOR, "lighting campfire");
                 if (this.campfire.cell === this.agent.cell) {
                     this.campfire.lightFire();
                     return;

@@ -17,7 +17,7 @@ namespace Game {
             this.update = (n: number)  => {
                 var newVal = this.change(this.value, this.updateBonus(), n);
                 this.attributes.entity.log(LOGTAG_ATTRIBUTE,
-                    this.displayName + " " + this.value + " -> " + newVal);
+                    this.displayName + " " + this.value.toPrecision(3) + " -> " + newVal.toPrecision(3));
                 this.value = newVal;
             }
         }

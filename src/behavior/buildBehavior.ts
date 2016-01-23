@@ -80,7 +80,7 @@ namespace Game {
             for (var i = 0; i < buildings.length; ++i) {
                 var building = buildings[i];
                 if (building.rect.intersects(rect)) {
-                    console.log("building in the way!");
+                    this.agent.log(LOGTAG_BEHAVIOR, "building in the way!");
                     return false;
                 }
             }
@@ -129,14 +129,14 @@ namespace Game {
                 var template = this.standardHouseTemplate;
                 var pos = this.findBuildTargetPosition(template);
                 if (pos) {
-                    console.log("found target rect: " + pos.x + ", " + pos.y);
+                    this.agent.log(LOGTAG_BEHAVIOR, "found target rect: " + pos.x + ", " + pos.y);
                     this.building = new Building(pos, template);
                     buildings.push(this.building);
                 }
             }
             
             if (!this.building) {
-                console.log("no building!");
+                this.agent.log(LOGTAG_BEHAVIOR, "no building!");
                 return;
             }
             
@@ -144,14 +144,14 @@ namespace Game {
             if (!next.cell) {
                 //console.log("no build cell found");
                 if (next.skipped === 0) {
-                    console.log("DONE building");
+                    this.agent.log(LOGTAG_BEHAVIOR, "DONE building");
                     this.building.isDone = true;
                     this.building = null;
                 }
                 return;
             }
             
-            console.log("move");
+            this.agent.log(LOGTAG_BEHAVIOR, "move");
             var moveAction = new MoveToPointAction(this.agent, Distance.Zero);
             moveAction.setTarget(next.cell.getPosition());
             moveAction.step();

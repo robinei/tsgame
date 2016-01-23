@@ -8,7 +8,7 @@ namespace Game {
         pathIndex: number = 1;
         
         constructor(agent: Agent, wantedDistance?: Distance) {
-            super();
+            super(agent);
             this.agent = agent;
             this.wantedDistance = valueOrDefault(wantedDistance, Distance.Close);
         }
@@ -26,7 +26,7 @@ namespace Game {
             return !this.target || this.agent.getPosition().distanceTo(this.target) <= this.wantedDistance;
         }
         
-        step() {
+        step(): boolean {
             if (this.isDone()) {
                 return false;
             }

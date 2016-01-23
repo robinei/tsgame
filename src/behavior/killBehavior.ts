@@ -12,10 +12,6 @@ namespace Game {
         }
 
         update() {
-            if (!this.agent.cell || !this.agent.canMoveNow()) {
-                return;
-            }
-            
             this.moveAction = new MoveToPointAction(this.agent, Distance.Adjacent);
             if(!this.pickTarget()) {
                 return;

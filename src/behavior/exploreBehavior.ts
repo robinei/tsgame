@@ -21,7 +21,7 @@ namespace Game {
         }
 
         update() {
-            if (!this.agent.cell || !this.agent.canMoveNow() || !this.targetCell) {
+            if (!this.targetCell) {
                 return;
             }
             

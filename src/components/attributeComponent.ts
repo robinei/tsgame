@@ -15,6 +15,35 @@ namespace Game {
             this.entity = entity;
         }
         
+        update() {
+            this.energy.update(50);
+            this.enthusiasm.update(-0.5);
+            this.community.update(1);
+            this.nutrition.update(1);
+            this.comfort.update(1);
+            if (this.anyPeople(Distance.Close)) {
+                this.community.update(-10);
+            }
+            if (this.anyPeople(Distance.Adjacent)) {
+                this.comfort.update(1);
+            }
+        }
+                
+        anyPeople(range: Distance): boolean {
+            var foundPerson = false;
+            this.entity.cell.forNeighbours(range,
+                ((self: Agent) =>
+                    (cell: MapCell) => {
+                        if(cell.agent && cell.agent !== self) {
+                            foundPerson = true;
+                            return false;
+                        }
+                        return true;
+                    })
+                (<Agent> this.entity));
+            return foundPerson;
+	    }
+        
         setAttributes(str:number, dex:number, con:number, int:number, wis:number, cha:number) {
             this.strength = new Attribute(this, "Strength", str);
             this.dexterity = new Attribute(this, "Dexterity", dex);
@@ -24,12 +53,17 @@ namespace Game {
             this.charisma = new Attribute(this, "Charisma", cha);
         }
         
+        // Energy regenerates quickly and is used to perform most actions,
+        // such as moving, striking, shooting, etc. 
+        energy:Health;
         vitality:Health;
         sanity:Health;
         vigour:Health;
         enthusiasm:Health;
         
         setHealth() {
+            this.energy = new Health("Energy", this,
+                (a) => 0.5 + 0.5 * a.dexterity.getValue());
             this.vitality = new Health("Vitality", this,
                 (a) => 0.5 + 0.5 * a.constitution.getValue())
             this.sanity = new Health("Sanity", this,
