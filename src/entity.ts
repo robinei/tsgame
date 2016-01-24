@@ -8,6 +8,7 @@ namespace Game {
         attributes: AttributeComponent = null;
         behaviorSelector: BehaviorSelector = null;
         consoleLogger: ConsoleLogger = null;
+        inventory: Inventory = null;
         
         log(tag: string, message: string) {
             if (this.consoleLogger) {

@@ -2,7 +2,7 @@ namespace Game {
 
     /**
      * Used to prioritze behaviors.
-     * Urgency ranges:
+     * Approximate urgency ranges:
      * 0-1 self realization and non-urgent basic needs
      * 1-2 pressing basic needs
      * 2+  life threatening

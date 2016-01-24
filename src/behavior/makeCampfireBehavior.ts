@@ -1,45 +1,5 @@
 namespace Game {
-    
-    export function HasItemOfType(itemHolder: ItemHolder, itemType: InventoryItemType): boolean {
-        if (itemHolder == null || itemHolder.inventory == null) {
-            return false;
-        }
-        var inventory = itemHolder.inventory;
-        for (var i = 0; i < inventory.length; ++i) {
-            if (inventory[i].type === itemType) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    export function GetItemOfTypeCount(itemHolder: ItemHolder, itemType: InventoryItemType): number {
-        if (itemHolder == null || itemHolder.inventory == null) {
-            return 0;
-        }
-        var inventory = itemHolder.inventory;
-        var count = 0;
-        for (var i = 0; i < inventory.length; ++i) {
-            if (inventory[i].type === itemType) {
-                count++;
-            }
-        }
-        return count;
-    }
-    
-    export function RemoveItemOfType(itemHolder: ItemHolder, itemType: InventoryItemType): InventoryItem {
-        if (itemHolder == null || itemHolder.inventory == null) {
-            return null;
-        }
-        var inventory = itemHolder.inventory;
-        for (var i = 0; i < inventory.length; ++i) {
-            if (inventory[i].type === itemType) {
-                return inventory.splice(i, 1)[0];
-            }
-        }
-        return null;
-    }
-    
+        
     /*
     export class GetStoredItemsBehavior extends Behavior {
         
@@ -114,9 +74,136 @@ namespace Game {
             }
         }        
     }
+    */
     
-    export class MakeCampfireBehavior extends Behavior {
+    export class MakeCampfireBehavior extends ActionBehavior {        
+        campfire: Campfire;
+        delegateBehavior: ActionBehavior;
+    
+        findClosestCampfire(): Campfire {
+            var campfire;
+            this.entity.cell.forNeighbours(30, function(cell: MapCell) {
+                if (cell != null && cell.doodad instanceof Campfire) {
+                    campfire = cell.doodad;
+                    return false;
+                }
+                return true;
+             });
+
+             return campfire;
+        }
         
+        updateCampfire(): boolean {
+            this.campfire = this.findClosestCampfire();
+            if (this.campfire) {
+                this.entity.log(LOGTAG_BEHAVIOR, "found campfire");
+            }
+            return toBoolean(this.campfire);
+        }
+        
+        hasWood(): boolean {
+            return this.entity.inventory.hasItemOfType(InventoryItemType.Wood);
+        }
+        
+        predict(requirements: Array<Outcome>): Array<Outcome> {
+            return arrayWhere(requirements,
+                (r: Outcome) => {
+                    if (r instanceof StatChanged) {
+                        // TODO(audun) see random walk predict 
+                        return r.attribute.displayName == "Nutrition"
+                            && r.amount < 0;
+                    } 
+                    return false;
+                });
+        }
+        
+        reconfigure() {
+            // Behavior is the same no matter what the requirements are
+        }
+        
+        isSuitableCampfirePlace(cell: MapCell): boolean {
+            if (!cell.canBeEntered() && this.entity.cell !== cell) {
+                return false;
+            }
+            var retval = true;
+            cell.forNeighbours(Distance.Adjacent, cell => {
+                if (cell.doodad) {
+                    retval = false;
+                    return false;
+                } 
+                return true;
+            });
+            return retval;
+        }
+        
+        isAdjacentToCellWithUnlitCampfire(): boolean {
+            var retval = false;
+            this.entity.cell.forNeighbours(Distance.Adjacent, (cell) => {
+                if (cell.doodad instanceof Campfire) {
+                    retval = true;
+                    return false;
+                }
+                return true;
+            });
+            return retval;
+        }
+        
+        pickNewAction() {
+            // Event sequence from nothing
+            // HarvestBehavior
+            // - MoveToPoint
+            // - Strike Tree
+            // - TakeItems Cell Wood
+            // MakeCampfireBehavior
+            // - MoveToPoint
+            // - GiveItems Cell Wood
+            // - Ignite Campfire
+            
+            this.updateCampfire();
+            
+            if (this.isAdjacentToCellWithUnlitCampfire()) {
+                this.setAction(new IgniteAction(this.entity, this.entity.cell.doodad));
+                return;
+            }
+            
+            map.cells.
+            if 
+            
+            
+            if (!this.hasWood()) {
+                // TODO
+                return;
+            }
+            if (!this.isSuitableCampfirePlace(this.entity.cell)
+                // TODO
+                return;
+            }
+            
+            this.setAction(new )
+            var nearbyEnterableCells = new Array<MapCell>();
+            this.entity.cell.forNeighbours(Distance.Medium, function(cell: MapCell) {
+                if (cell.canBeEntered()) {
+                    nearbyEnterableCells.push(cell);
+                }
+                return true;
+            });
+            if (nearbyEnterableCells.length == 0) {
+                return;
+            }
+            var index = Math.floor(Math.random() * nearbyEnterableCells.length);
+            var agent = <Agent> this.entity;
+            var action = new MoveToPointAction(agent, Distance.Zero);
+            action.setTarget(nearbyEnterableCells[index].getPosition());
+            action.displayName = "went for a walk";
+            var self = this;
+            action.onReachedTarget = (action: Action) => {
+                var entity = action.entity;
+                return new Event(action, entity.cell, entity);
+            };
+            this.setAction(action);
+        }
+    }
+    /*        
         campfire: Campfire;
         getStoredWoodBehavior: Behavior;
         harvestWoodBehavior: Behavior;
@@ -134,32 +221,7 @@ namespace Game {
             this.getStoredWoodBehavior.reset();
             this.harvestWoodBehavior.reset();
         }
-
-        findClosestCampfire(): Campfire {
-            var campfire;
-            this.agent.cell.forNeighbours(30, function(cell: MapCell) {
-                if (cell != null && cell.doodad instanceof Campfire) {
-                    campfire = cell.doodad;
-                    return false;
-                }
-                return true;
-             });
-
-             return campfire;
-        }
         
-        updateCampfire(): boolean {
-            this.campfire = this.findClosestCampfire();
-            if (this.campfire) {
-                this.agent.log(LOGTAG_BEHAVIOR, "found campfire");
-            }
-            return toBoolean(this.campfire);
-        }
-        
-        hasWood(): boolean {
-            return HasItemOfType(this.agent, InventoryItemType.Wood);
-        }
-
         calcUrgency(): number {
             // TODO use sub-behaviours to get the max urgency
             if (agents[0] !== this.agent) {

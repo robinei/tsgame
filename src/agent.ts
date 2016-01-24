@@ -17,26 +17,6 @@ namespace Game {
         }
     }
     
-    export enum InventoryItemType {
-        Wood,
-        Food,
-        Weapon,
-        Tool
-    }
-
-    export interface InventoryItem {
-        weight: number;
-        type: InventoryItemType;
-    }
-
-    export class Wood implements InventoryItem{
-        weight = 1
-        type = InventoryItemType.Wood
-        toString(): string {
-            return "wood";
-        }
-    }
-
     export interface Skin {
         imageSource: (Direction) => string;
     }
@@ -152,40 +132,6 @@ namespace Game {
             });
         }
                 
-        getTotalInventoryWeight()
-        {
-            var weight = 0
-            this.inventory.forEach(element => {
-                weight += element.weight
-            });
-            
-            return weight
-        }
-        
-        removeNextOfType(itemType: InventoryItemType): InventoryItem {
-            var foundItem;
-            
-            for (var i = 0; i < this.inventory.length; ++i){
-                if (this.inventory[i].type == itemType){
-                    foundItem = this.inventory[i];
-                    this.inventory.splice(i, 1);
-                }
-            }
-            
-            return foundItem;
-        }
-        
-        tryAddInventoryItem(item: InventoryItem){
-            if (!this.hasRoomForInventoryItem(item))
-                return false
-            
-            this.inventory.push(item)
-            return true
-        }
-
-        hasRoomForInventoryItem(item: InventoryItem){
-            return ( this.getTotalInventoryWeight() + item.weight <= this.carryCapacity);
-        }
             
         
         calcStaminaRegain(){

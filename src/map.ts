@@ -71,7 +71,7 @@ namespace Game {
             return this.map.getCell(this.x + dirDX[direction], this.y + dirDY[direction]);
         }
         
-        forNeighbours(radius: number, func: (MapCell) => boolean) {
+        forNeighbours(radius: number, func: (cell: MapCell) => boolean) {
             if (radius > maxAreaRadius) {
                 throw "too big radius";
             }
