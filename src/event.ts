@@ -1,9 +1,44 @@
 namespace Game {
     
+    
+    /**
+     * Events are returned by behaviors when
+     * something interesting happens. The event
+     * contains the rules of the world, and will
+     * evaluate the outcomes of the event.
+     * Recent events with outcomes are recorded in
+     * an event log.
+     */
     export class EventManager {
         events: Array<Event> = [];
+
+        evaluate(event: Event) {
+            if (!event) {
+                return;
+            }
+            // These evaluations are at the momement mostly serving as examples,
+            // rather than being realistic.  
+            if (event.action instanceof MoveToPointAction) {
+                var entity = event.initiator;
+                if (event.target instanceof Agent) {
+                    // Reduce community need if the intiator claims
+                    // to have moved toward an agent target.
+                    event.outcomes = this.statUpdateOutcome(
+                        entity.attributes.community, -10);
+                } else {
+                    event.outcomes = this.statUpdateOutcome(
+                        entity.attributes.comfort, -5);
+                }
+                this.addEvent(event);
+            }
+        }
         
-        addEvent(event: Event) {
+        private statUpdateOutcome(attr: Attribute, n: number) {
+            var valueDiff = attr.update(n);
+            return [new StatChanged(attr, valueDiff)];
+        }
+        
+        private addEvent(event: Event) {
             console.log(event.getLogString());
             this.events.push(event);
         }
@@ -121,12 +156,12 @@ namespace Game {
     */
     
     export class Event {
+        outcomes: Array<Outcome>;
         
         constructor(
             public action: Action,
             public cell: MapCell,
             public initiator: Entity,
-            public outcomes: Array<Outcome>,
             public target?: Entity,
             public medium?: Medium)
          {}
@@ -141,7 +176,8 @@ namespace Game {
                  str += " using " + this.medium.displayName;
              }
              str += ".";
-             for (var i = 0; i < this.outcomes.length; ++i) {
+             var outcomeCount = this.outcomes ? this.outcomes.length : 0;
+             for (var i = 0; i < outcomeCount; ++i) {
                  str += " " + this.outcomes[i].getLogString();
              }
              return str;

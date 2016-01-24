@@ -9,8 +9,8 @@ namespace Game {
             return false;
         }
 
-        step(): Array<Outcome> {
-            return [];
+        step(): Event {
+            return null;
         }
 
         abort() {

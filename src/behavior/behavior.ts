@@ -42,9 +42,10 @@ namespace Game {
         
         /**
          * Engages in this behavior for one turn and
-         * returns any outcomes this has lead to, if any.
+         * can return an event that needs to be evaluated
+         * for outcome.
          */
-        update(): Array<Outcome>;
+        update(): Event;
     }
     
     
@@ -102,14 +103,14 @@ namespace Game {
             this.setAction(null);
         }
         
-        update(): Array<Outcome> {
+        update(): Event {
             if (!this.currentAction || this.currentAction.isDone()) {
                 this.pickNewAction();
             }
             if (this.currentAction) {
                 return this.currentAction.step()
             }
-            return [];
+            return null;
         }
         
         toString() : string { return getObjectName(this); }

@@ -161,10 +161,12 @@ namespace Game {
 
     function updateWorld() {
         for (var i = 0; i < doodads.length; ++i) {
-            doodads[i].update();
+            var event = doodads[i].update();
+            eventManager.evaluate(event);
         }
         for (var i = 0; i < agents.length; ++i) {
-            agents[i].update();
+            var event = agents[i].update();
+            eventManager.evaluate(event);
         }
     }
 

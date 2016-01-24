@@ -46,10 +46,7 @@ namespace Game {
             var self = this;
             action.onReachedTarget = (action: Action) => {
                 var entity = action.entity;
-                var change = entity.attributes.community.update(-10);
-                var outcomes = [new StatChanged(entity.attributes.community, change)];
-                eventManager.addEvent(new Event(action, entity.cell, entity, outcomes, self.target));
-                return outcomes;
+                return new Event(action, entity.cell, entity, self.target);
             };
             this.setAction(action);
         }

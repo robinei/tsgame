@@ -31,7 +31,7 @@ namespace Game {
             this.log(LOGTAG_BEHAVIOR, "New behavior " + this.currentBehavior.toString());
         }
         
-        update() {
+        update(): Event {
             if (this.attributes) {
                 this.attributes.update();
             }
@@ -39,8 +39,9 @@ namespace Game {
                 this.setBehavior(this.behaviorSelector.chooseBehavior());
             }
             if (this.currentBehavior) {
-                this.currentBehavior.update();
+                return this.currentBehavior.update();
             }
+            return null;
         }
     }
 }
