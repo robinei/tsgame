@@ -19,7 +19,7 @@ namespace Game {
                 var newVal = this.change(this.value, this.updateBonus(), n);
                 var diff = newVal - this.value;
                 this.attributes.entity.log(LOGTAG_ATTRIBUTE,
-                    this.displayName + " " + this.value.toPrecision(3) + " -> " + newVal.toPrecision(3));
+                    this.displayName + " " + this.value.toFixed(2) + " -> " + newVal.toFixed(2));
                 this.value = newVal;
                 return diff;
             }
@@ -34,7 +34,7 @@ namespace Game {
         }  
         
         toString():string {
-            return this.displayName + ': ' + this.getValue().toPrecision(3);
+            return this.displayName + ': ' + this.getValue().toFixed(2);
         }
         
         getLogName(): string {

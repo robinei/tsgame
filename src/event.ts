@@ -127,7 +127,7 @@ namespace Game {
             var changeStatement = this.amount < 0 ? "reduced by" : "increased by"
             return getPossessive(this.attribute.attributes.entity.displayName)
                 + " " + this.attribute.getLogName() + " " + changeStatement
-                + " " + Math.abs(this.amount).toPrecision(2) + ".";
+                + " " + Math.abs(this.amount).toFixed(2) + ".";
         }
         reqEquals(other: Outcome) {
             if (other instanceof StatChanged) {
