@@ -1,4 +1,5 @@
 namespace Game {
+    /*
     export class DeliverBehavior extends Behavior {
         movetoPoint: MoveToPointAction;
 
@@ -25,4 +26,5 @@ namespace Game {
             }
         }
     }
+    */
 }

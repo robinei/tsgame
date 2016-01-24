@@ -1,4 +1,5 @@
 namespace Game {
+    /*
     export class ExploreBehavior extends Behavior {
         targetCell: MapCell = null;
         
@@ -30,4 +31,5 @@ namespace Game {
             moveAction.step();
         }
     }
+    */
 }

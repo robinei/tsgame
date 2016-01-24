@@ -1,22 +1,19 @@
 namespace Game {
     export class Action {
-        entity: Entity;
+        displayName: string = "...";
         
-        constructor(entity: Entity) {
-            this.entity = entity;
+        constructor(public entity: Entity) {
         }
-
                 
         isDone(): boolean {
             return false;
         }
-        // return true as long as we want to continue to be run
-        step() : boolean {
-            return true;
+
+        step(): Array<Outcome> {
+            return [];
         }
-        // callbacks
+
         abort() {
-            
         }
     }
     
@@ -35,6 +32,9 @@ namespace Game {
     export class Wood implements InventoryItem{
         weight = 1
         type = InventoryItemType.Wood
+        toString(): string {
+            return "wood";
+        }
     }
 
     export interface Skin {
@@ -88,6 +88,7 @@ namespace Game {
             this.attributes.setHealth();
             this.attributes.setNeeds();
             
+            /*
             this.behaviors = [
                 new ExploreBehavior(this),
                 new RandomWalkBehavior(this),
@@ -97,6 +98,7 @@ namespace Game {
                 new DeliverBehavior(this),
                 new BuildBehavior(this),
             ];
+            */
             this.behaviorSelector = new BehaviorSelector(this);
             
             this.displayName = getRandomName();

@@ -1,56 +1,151 @@
 namespace Game {
     
+    export class EventManager {
+        events: Array<Event> = [];
+        
+        addEvent(event: Event) {
+            console.log(event.getLogString());
+            this.events.push(event);
+        }
+    }
+    
+    /**
+     * Returns true if the two arrays are equal when considered
+     * as requirements for a behavior. This may for example allow
+     * for StatChanged instances to be considered equal if
+     * the sign of the change amount is equal.
+     */
+    export function RequirementsEquals(a: Array<Outcome>, b: Array<Outcome>): boolean {
+        // TODO(audun) not quite happy with this way of comparing requirements
+        if (toBoolean(a) != toBoolean(b)) {
+            return false;
+        }
+        if (a.length != b.length) {
+            return false;
+        }
+        for (var i = 0; i < a.length; ++i) {
+            for (var j = 0; j < b.length; ++j) {
+                if (a[i].reqEquals(b[i])) {
+                    continue;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * medium: an intervening agency, means, or instrument 
      * by which something is conveyed or accomplished
      */
     export interface Medium {
+        displayName: string;
     }
     
     export interface ItemHolder {
+        displayName: string;
         inventory: Array<InventoryItem>;
     }
     
-    export interface Outcome {
+    export abstract class Outcome {
+        abstract getLogString(): string;
+        abstract reqEquals(other: Outcome);
     }
     
-    export interface ItemAquired extends Outcome {
+    export class ItemAquired extends Outcome {
         itemHolder: ItemHolder;
         item: InventoryItem;
+        getLogString(): string {
+            return this.itemHolder.displayName + " received " + this.item;
+        }
+        reqEquals(other: Outcome) {
+            if (other instanceof ItemAquired) {
+                return this.itemHolder === other.itemHolder
+                    && this.item.type === other.item.type;
+            }
+            return false;
+        }
     }
     
-    export interface ItemLost extends Outcome {
+    export class ItemLost extends Outcome {
         itemHolder: ItemHolder;
         item: InventoryItem;
+        getLogString(): string {
+            return this.itemHolder.displayName + " lost " + this.item;
+        }
+        reqEquals(other: Outcome) {
+            if (other instanceof ItemLost) {
+                return this.itemHolder === other.itemHolder
+                    && this.item.type === other.item.type;
+            }
+            return false;
+        }
     }
     
-    export interface Damage extends Outcome {
-        victim: Entity;
-        amount: number;
+    export class StatChanged extends Outcome {
+        constructor(public attribute: Attribute, public amount: number) {
+            super();
+            this.attribute = attribute;
+            this.amount = amount;
+        }
+        getLogString(): string {
+            var changeStatement = this.amount < 0 ? "reduced by" : "increased by"
+            return getPossessive(this.attribute.attributes.entity.displayName)
+                + " " + this.attribute.getLogName() + " " + changeStatement
+                + " " + Math.abs(this.amount).toPrecision(2) + ".";
+        }
+        reqEquals(other: Outcome) {
+            if (other instanceof StatChanged) {
+                return this.attribute === other.attribute
+                    && sign(this.amount) == sign(other.amount);
+            }
+            return false;
+        }
     }
     
-    export interface EntityDestroyed extends Outcome {
+    /*
+    export class EntityDestroyed extends Outcome {
         entity: Entity;
     }
     
-    export interface ItemMoved extends Outcome {
+    export class ItemMoved extends Outcome {
         item: InventoryItem;
         source: ItemHolder;
         destination: ItemHolder;
     }
     
-    export interface ItemTransformed extends Outcome {        
+    export class ItemTransformed extends Outcome {        
         before: Array<InventoryItem>;
         after: Array<InventoryItem>;
     }
+    */
     
-    export interface Event {
-        cell: MapCell;
-        initiator: Entity;
-        target?: Entity;
-        medium?: Medium;
-        outcomes: Array<Outcome>;
-        getLogString(): string;
+    export class Event {
+        
+        constructor(
+            public action: Action,
+            public cell: MapCell,
+            public initiator: Entity,
+            public outcomes: Array<Outcome>,
+            public target?: Entity,
+            public medium?: Medium)
+         {}
+         
+         getLogString(): string {
+             var str = this.initiator.displayName + " "
+                + this.action.displayName;
+             if (this.target) {
+                 str += " " + this.target.displayName;
+             }
+             if (this.medium) {
+                 str += " using " + this.medium.displayName;
+             }
+             str += ".";
+             for (var i = 0; i < this.outcomes.length; ++i) {
+                 str += " " + this.outcomes[i].getLogString();
+             }
+             return str;
+         }
     }
     
     /* Example events

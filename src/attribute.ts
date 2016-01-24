@@ -4,7 +4,8 @@ namespace Game {
         value: number = 0.5;
         increase: (n: number) => void;
         decrease: (n: number) => void;
-        update: (n:number) => void;
+        /** Returns the actual change in value */
+        update: (n:number) => number;
         updateBonus: () => number;
         attributes: AttributeComponent;
                 
@@ -16,9 +17,11 @@ namespace Game {
             
             this.update = (n: number)  => {
                 var newVal = this.change(this.value, this.updateBonus(), n);
+                var diff = newVal - this.value;
                 this.attributes.entity.log(LOGTAG_ATTRIBUTE,
                     this.displayName + " " + this.value.toPrecision(3) + " -> " + newVal.toPrecision(3));
                 this.value = newVal;
+                return diff;
             }
         }
         
@@ -31,7 +34,11 @@ namespace Game {
         }  
         
         toString():string {
-            return this.displayName + ': ' + this.getValue();
+            return this.displayName + ': ' + this.getValue().toPrecision(3);
+        }
+        
+        getLogName(): string {
+            return this.displayName.toLowerCase();
         }
     }
     
@@ -58,6 +65,9 @@ namespace Game {
         }
         getValue() {
             return this.value;
+        }
+        getLogName(): string {
+            return super.getLogName() + " need";
         }
     }
 }

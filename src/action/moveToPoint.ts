@@ -7,6 +7,8 @@ namespace Game {
         path: Array<Point> = null;
         pathIndex: number = 1;
         
+        onReachedTarget: (action: Action) => Array<Outcome>;
+        
         constructor(agent: Agent, wantedDistance?: Distance) {
             super(agent);
             this.agent = agent;
@@ -26,19 +28,22 @@ namespace Game {
             return !this.target || this.agent.getPosition().distanceTo(this.target) <= this.wantedDistance;
         }
         
-        step(): boolean {
+        step(): Array<Outcome> {
             if (this.isDone()) {
-                return false;
+                return [];
             }
             var cell = this.getNextCell();
             if (cell) {
                 if (!cell.canBeEntered()) {
                     // TODO(robin): choose alternative path
-                    return true;
+                    return [];
                 }
                 this.agent.moveTo(cell);
             }
-            return !this.isDone();
+            if (this.isDone() && this.onReachedTarget) {
+                return this.onReachedTarget(this);
+            }
+            return [];
         }
         
         getNextCell(): MapCell {

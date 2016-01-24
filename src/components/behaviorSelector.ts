@@ -1,18 +1,15 @@
 namespace Game {
     
-    export class Requirement {
-        
-    }
-    
-    
     export class BehaviorSelector {
         entity: Entity;
 
         tempBehavior: Behavior;
+        followWalkBehavior: Behavior;
         
         constructor(entity: Entity) {
             this.entity = entity;
-            this.tempBehavior = new RandomWalkBehavior(<Agent> entity);
+            this.tempBehavior = new RandomWalkBehavior(entity);
+            this.followWalkBehavior = new FollowWalkBehavior(entity);
         }
         
         chooseBehavior(): Behavior {
@@ -44,7 +41,19 @@ namespace Game {
                     }
                 }).behavior);
                 */
-            return this.tempBehavior;
+            if (this.entity.attributes.comfort.getValue()
+                > this.entity.attributes.community.getValue())
+            {
+                this.tempBehavior.setRequirements([new StatChanged(
+                    this.entity.attributes.comfort,
+                    -this.entity.attributes.comfort.getValue())]);
+                return this.tempBehavior;
+            } else {
+                this.followWalkBehavior.setRequirements([new StatChanged(
+                    this.entity.attributes.comfort,
+                    -this.entity.attributes.comfort.getValue())]);
+                return this.followWalkBehavior;
+            }
         }        
         
         getBehaviorsForOutcome(outcome: Outcome) {

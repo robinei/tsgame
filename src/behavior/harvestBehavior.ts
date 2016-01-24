@@ -17,7 +17,8 @@ namespace Game {
         
         return resourceCell;
     }
-    
+
+    /*    
     export class HarvestBehavior extends Behavior {
         resource: MapCell;
         resourceCell: MapCell;
@@ -101,4 +102,5 @@ namespace Game {
             }
         }
     }
+    */
 }

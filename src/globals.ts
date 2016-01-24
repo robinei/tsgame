@@ -7,5 +7,5 @@ namespace Game {
     export var storageCell: MapCell;
     export var doodads: Array<Doodad> = [];
     export var buildings: Array<Building> = [];
-    
+    export var eventManager: EventManager;
 }

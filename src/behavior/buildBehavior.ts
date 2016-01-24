@@ -11,12 +11,12 @@ namespace Game {
         }
     }
     
-    export class BuildBehavior extends Behavior {
+    // TODO(audun) rewrite as new Behavior
+    export class BuildBehavior {
         standardHouseTemplate: MapTemplate;
         building: Building;
         
-        constructor(agent: Agent) {
-            super(agent);
+        constructor(public agent: Agent) {
             
             var X = CellTemplates.Wall;
             var f = CellTemplates.Floor;

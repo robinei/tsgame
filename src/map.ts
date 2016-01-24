@@ -41,6 +41,7 @@ namespace Game {
         y: number;
         agent: Agent = null;
         doodad: Doodad = null;
+        displayName: string;
         
         walkable: boolean;
         baseTile: number;
@@ -52,6 +53,7 @@ namespace Game {
             this.map = map;
             this.x = x;
             this.y = y;
+            this.displayName = "(" + this.x + ", " + this.y + ")";
         }
         
         putItem(item: InventoryItem){

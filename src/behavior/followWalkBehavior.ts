@@ -1,53 +1,58 @@
 namespace Game {
-    export class FollowWalkBehavior extends Behavior {
+    /**
+     * This behavior promises to reduce need for community.
+     */
+    export class FollowWalkBehavior extends ActionBehavior {
         target: Agent = null;
-        moveAction: MoveToPointAction = null;
-                
+        
         toString(): string {
             return super.toString() + (this.target? "(Target: " + this.target.displayName + ")" : "")
         }
-
-        calcUrgency(): number {
-            if(agents.length <= 1){
-                return 0;
-            }
-            return this.agent.attributes.community.getValue();
+        
+        predict(requirements: Array<Outcome>): Array<Outcome> {
+            return arrayWhere(requirements,
+                (r: Outcome) => {
+                    if (r instanceof StatChanged) {
+                        // TODO(audun) Our goal here is to check if the required outcome
+                        // is a decrease in the comfort need for our own entity. 
+                        // For now we check the display name of the attribute, which is
+                        // not a robust check. We also skip checking which entity the
+                        // attribute belongs to, since for now, we are only concerned with
+                        // our own needs. This may however change. 
+                        return r.attribute.displayName == "Community"
+                            && r.amount < 0;
+                    } 
+                    return false;
+                });
         }
         
-        update() {
-            if (!this.moveAction) {
-                this.moveAction = new MoveToPointAction(this.agent);
-            }
-            if(!this.pickTarget()) {
-                return;
-            }
-            this.doMove();
+        reconfigure() {
+            // Behavior is the same no matter what the requirements are
         }
         
-        pickTarget(): boolean {
+        pickNewAction() {
             if(agents.length <= 1) {
                 return false;
             }
-            
-            while(this.target == null || this.target === this.agent) {
+
+            this.target = null;
+            while(this.target == null || this.target === this.entity) {
                 var index = Math.floor(Math.random()*agents.length);
                 this.target = agents[index];
             }
-            this.moveAction.setTarget(this.target.getPosition());
-            return true;
-        }
-        
-        doMove() {
-            if (!this.moveAction.step()) {
-                this.reset();
-            }
-        }
-        
-        reset() {
-            this.target = null;
-            if (this.moveAction !== null) {
-                this.moveAction.setTarget(null);
-            }
+            var action = new MoveToPointAction(<Agent> this.entity);
+            action.setTarget(this.target.getPosition());
+            action.displayName = "followed";
+            var self = this;
+            action.onReachedTarget = (action: Action) => {
+                var entity = action.entity;
+                var change = entity.attributes.community.update(-10);
+                var outcomes = [new StatChanged(entity.attributes.community, change)];
+                eventManager.addEvent(new Event(action, entity.cell, entity, outcomes, self.target));
+                return outcomes;
+            };
+            this.setAction(action);
         }
     }
+    
 }

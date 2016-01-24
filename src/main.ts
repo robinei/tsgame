@@ -14,6 +14,7 @@ namespace Game {
         document.onkeydown = onKeyDown;
         document.onmousemove = onMouseMove;
         canvas.onclick = onClick;
+        eventManager = new EventManager();
         generateMap();
         resizeCanvas();
     }
@@ -147,7 +148,7 @@ namespace Game {
             var agent = new Agent(cell);
             agents.push(agent);
         }
-        agents[0].consoleLogger.setEnabled(true, LOGTAG_BEHAVIOR, LOGTAG_ATTRIBUTE);
+        agents[0].consoleLogger.setEnabled(true, LOGTAG_BEHAVIOR);
 // Activates zombie-wonkies:
 //        agents[0].skin = new WonkeySkin()
 //        agents[0].behaviors = [ new KillBehavior(agents[0]) ];

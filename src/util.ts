@@ -47,4 +47,21 @@ namespace Game {
             array[randomIndex] = temporaryValue;
         }
     }
+    
+    export function sign(n: number) {
+        return n > 0 ? 1 : (n < 0 ? -1 : 0);
+    }
+    
+    /**
+     * LINQ-like where function
+     */
+    export function arrayWhere<T>(array: Array<T>, func: (T) => boolean): Array<T> {
+        var retval = new Array<T>();
+        for (var i = 0; i < array.length; i++) {
+            if (func(array[i])) {
+                retval.push(array[i]);
+            }
+        }
+        return retval;
+    }    
 }

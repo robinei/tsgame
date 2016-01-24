@@ -1,4 +1,5 @@
 namespace Game {
+    /*
     export class KillBehavior extends Behavior {
         target: Agent = null;
         moveAction: MoveToPointAction = null;
@@ -36,4 +37,5 @@ namespace Game {
             return true;
         }
     }
+    */
 }

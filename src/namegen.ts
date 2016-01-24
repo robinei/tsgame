@@ -45,6 +45,16 @@ namespace Game {
         return capitalizeFirstLetter(name);
     }
     
+    export function getPossessive(noun: string) {
+        if (!noun || noun.length == 0) {
+            return '';
+        }
+        if (noun[noun.length - 1] == 's') {
+            return noun + "'";
+        }
+        return noun + "'s";
+    }
+    
     class advancedNameGen {
         consonantSequenceLeading(input:string):string{
             switch(input){

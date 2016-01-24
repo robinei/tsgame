@@ -1,22 +1,4 @@
 namespace Game {
-    export var LOGTAG_BEHAVIOR: string = "Behavior";
-    
-    export class Behavior {
-        update() {}
-        onActivate() {}
-        onDeactivate() {}
-        
-        // TODO remove these
-        reset() {}
-        calcUrgency(): number { return 0; }
-        
-        constructor(public agent: Agent) {
-            this.agent = agent;
-        }
-        
-        toString() : string { return getObjectName(this); }
-    }
-    
     export class Entity {
         cell: MapCell = null;
         displayName: string = "nn";

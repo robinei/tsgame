@@ -40,6 +40,7 @@ namespace Game {
         return null;
     }
     
+    /*
     export class GetStoredItemsBehavior extends Behavior {
         
         cellWithItem: MapCell;
@@ -230,5 +231,5 @@ namespace Game {
         }
 
     }
-    
+    */
 }
