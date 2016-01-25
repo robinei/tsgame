@@ -4,7 +4,7 @@ namespace Game {
         calcUrgency():number {
             return this.agent.attributes.insight.getValue() * (this.agent.needs);
         }
-        update():number {
+        update() {
             
         }
     }

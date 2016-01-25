@@ -1,4 +1,35 @@
 namespace Game {
+    export class Attribute {
+        displayName: string;
+        value: number = 0.5;
+        increase: (n: number) => void;
+        decrease: (n: number) => void;
+        update: (n:number) => void;
+        updateBonus: () => number;
+                
+        constructor(name: string, val?: number, updateBonus?: ()=> number) {
+            this.displayName = name;
+            this.value = val;
+            this.updateBonus = updateBonus || (() => 0);
+            
+            this.update = (n: number)  => {
+                this.value = this.change(this.value, this.updateBonus(), n);
+            }
+        }
+        
+        getValue(): number {
+            return this.value;
+        }
+        
+        change(value:number, bonus:number, n:number):number {
+            return Math.max(0, Math.min(1, value + 0.01 * (1 + bonus) * n));
+        }  
+        
+        toString():string {
+            return this.displayName + ': ' + this.getValue();
+        }
+    }  
+    
     export class AttributeComponent {
         strength:Attribute;
         dexterity:Attribute;
@@ -14,65 +45,6 @@ namespace Game {
             this.intelligence = new Attribute("Intelligence", int);
             this.wisdom = new Attribute("Wisdom", wis);
             this.charisma = new Attribute("Charisma", cha);
-        }
-        
-        vitality:Health;
-        sanity:Health;
-        vigour:Health;
-        enthusiasm:Health;
-        
-        setHealth() {
-            this.vitality = new Health("Vitality", this,
-                (a) => 0.5 + 0.5 * a.constitution.getValue())
-            this.sanity = new Health("Sanity", this,
-                (a) => 0.5 + 0.3 * a.wisdom.getValue() + 0.2 * a.intelligence.getValue())
-                
-            this.vigour = new Health("Vigour", this,
-                (a) => 0.4 + 0.2 * a.strength.getValue() + 0.2 * a.dexterity.getValue() + 0.2 * a.constitution.getValue())
-            this.enthusiasm = new Health("Enthusiasm", this,
-                (a) => 0.4 + 0.2 * a.intelligence.getValue() + 0.2 * a.wisdom.getValue() + 0.2 * a.charisma.getValue())
-        }
-        
-        axe:Skill;
-        throwing:Skill;
-        social:Skill;
-        
-        setSkills(axe:number, throwing:number, social:number) {
-            this.axe = new Skill("Axe", axe, this,
-                (a) => 0.8 * a.strength.getValue() + 0.2 * a.dexterity.getValue())
-                
-            this.throwing = new Skill("Throwing", throwing, this,
-                (a) => 0.2 * a.strength.getValue() + 0.8 * a.dexterity.getValue())
-                
-            this.social = new Skill("Social", social, this,
-                (a) => 0.8 * a.charisma.getValue() + 0.2 * a.wisdom.getValue())
-        }
-        
-        nutrition:Need;
-        comfort:Need;
-        community:Need;
-        curiosity:Need;
-        
-        setNeeds() {
-            this.nutrition = new Need("Nutrition", this,
-                (self:Need) => () => {
-                    return self.attributes.strength.getValue() + (1-self.attributes.vigour.getValue())/2;
-                });
-            
-            this.comfort = new Need("Comfort", this,
-                (self:Need) => () => {
-                    return (1-self.attributes.vitality.getValue() + 1-self.attributes.vigour.getValue())/2; 
-                });
-            
-            this.community = new Need("Community", this,
-                (self:Need) => () => {
-                    return (self.attributes.charisma.getValue() + self.attributes.enthusiasm.getValue())/2;              
-                });
-                
-            this.curiosity = new Need("Curiosity", this,
-                (self:Need) => () => {
-                    return (self.attributes.intelligence.getValue() + self.attributes.enthusiasm.getValue())/2;
-                });
-        }
+        }        
     }
 }

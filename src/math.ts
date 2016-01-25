@@ -92,4 +92,12 @@ namespace Game {
     export function interpolate(a:number, b:number, t:number) {
         return a * (1-t) + b * t;
     }
+    
+    export function avg(...args:number[]):number {
+        var sum = 0;
+        for (var i = 0; i < args.length; i++) {
+            sum += args[i];
+        }
+        return sum / args.length;
+    }
 }
