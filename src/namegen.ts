@@ -45,8 +45,66 @@ namespace Game {
         return capitalizeFirstLetter(name);
     }
     
-    class advancedNameGen {
-        consonantSequenceLeading(input:string):string{
+    class Name {        
+        private name: string = "";
+        
+        constructor(){
+            //initialize name with a syllable
+        }
+        
+        addSyllable():Name {
+            var syllable = new Syllable();
+            
+            switch (Math.floor(Math.random()*5)) {
+                case 0: syllable.addConsonant().addConsonant().addVowel()
+                case 1: syllable.addConsonant().addConsonant().addVowel().addConsonant()
+                case 2: syllable.addConsonant().addVowel()
+                case 3: syllable.addConsonant().addVowel().addConsonant()
+                case 4: syllable.addConsonant().addConsonant().addVowel()
+            }
+            
+            this.name += syllable;
+            return this;
+        }
+    }
+    class Syllable {
+        characters: string = "";
+        private vowels: string = "aeiouyæøå";
+        private consonants: string = "bcdfghjklmnpqrstv" 
+                
+        addVowel(chance: number = 1):Syllable {
+            this.characters += Syllable.pickLetter(this.vowels, chance);
+            return this;
+        }
+        
+        addConsonant(chance: number = 1):Syllable {
+            var source = null;
+            var indexOfLastChar = this.characters.length-1;
+            if(this.characters.length==0 || this.vowels.indexOf(this.characters[indexOfLastChar]) != -1){
+                source = this.consonants;
+            }
+            else if (this.characters.length==1){
+                source = Syllable.consonantSequenceLeading(this.characters);
+            }
+            else if (this.vowels.indexOf(this.characters[indexOfLastChar-1]) != -1) {
+                source = Syllable.consonantSequenceAfterVowel(this.characters[indexOfLastChar]);
+            }
+            else {
+                return this;
+            }
+            this.characters += Syllable.pickLetter(source, this.consonants.length);
+            return this;
+        }
+        
+        private static pickLetter(source: string, chance: number = 1):string {
+            if(Math.random() > chance) {
+                return '';
+            }
+            var v = Math.floor(Math.random() * source.length);
+            return source[v];
+        }
+        
+        private static consonantSequenceLeading(input:string):string{
             switch(input){
                 case 'b': return 'hjlrw';
                 case 'c': return 'hlr';
@@ -70,8 +128,9 @@ namespace Game {
                 case 'z': return 'h';
                 default: return '';
             }
-        } 
-        consonantSequenceAfterVowel(input:string):string{
+        }
+        
+        private static consonantSequenceAfterVowel(input:string):string{
             switch(input){
                 case 'b': return 'bdhjlr';
                 case 'c': return 'chlkr';
@@ -95,34 +154,6 @@ namespace Game {
                 case 'z': return '';
                 default: return '';
             }
-        }
-        
-        vowelSequence(input:string):string{
-            switch(input){
-                case 'a': return '';
-                case 'e': return '';
-                case 'i': return '';
-                case 'o': return '';
-                case 'u': return '';
-                case 'y': return '';
-                
-                case 'æ': return '';
-                case 'ø': return '';
-                case 'å': return '';
-                
-                case 'ä': return '';
-                case 'ë': return '';
-                case 'ï': return '';
-                case 'ö': return '';
-                case 'ü': return '';
-                
-                case 'à': return '';
-                case 'è': return '';
-                case 'ì': return '';
-                case 'ò': return '';
-                case 'ù': return '';
-                default: return '';
-            }
-        } 
+        }  
     }
 }
