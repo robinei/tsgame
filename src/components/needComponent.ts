@@ -10,19 +10,13 @@ namespace Game {
     export class Need implements Stat {
         displayName: string;
         value: number = 0.0;
-        increase: (n: number) => void;
-        decrease: (n: number) => void;
         update: (n:number) => void;
-        updateBonus: () => number;
-        component:NeedComponent
          
-        constructor(name:string, c:NeedComponent, ...args: ((c: NeedComponent) => number)[] ) {
-            this.component = c;
+        constructor(name:string) {
             this.displayName = name;
-            this.updateBonus = () => avg.apply(null, args.map((v)=>v(this.component)));
             
             this.update = (n: number)  => {
-                this.value = this.change(this.value, this.updateBonus(), n);
+                this.value = Need.change(this.value, n);
             }
         }
         
@@ -30,8 +24,8 @@ namespace Game {
             return this.value;
         }
         
-        change(value:number, bonus:number, n:number):number {
-            return Math.max(0, Math.min(1, value + 0.01 * (1 + bonus) * n));
+        private static change(value:number, n:number):number {
+            return Math.max(0, Math.min(1, value + 0.01 * n));
         }  
         
         toString():string {
@@ -39,63 +33,40 @@ namespace Game {
         }
     }
     
-    export class NeedComponent {
-        attributes:AttributeComponent;
-        health:HealthComponent;
-        skills:SkillComponent;
-        
+    export class NeedComponent extends Object{
         //Basic needs:
-        food:Need;
-        water:Need;
-        sleep:Need;
+        food:Need = new Need("Food");
+        water:Need = new Need("Food");
+        sleep:Need = new Need("Food");
         
         //Secondary needs:
-        shelter:Need;
-        clothing:Need;
-        comfort:Need;
+        shelter:Need = new Need("Food");
+        clothing:Need = new Need("Food");
+        comfort:Need = new Need("Food");
         
-        //Tertiary needs:        
-        community:Need;
-        success:Need;
-        control:Need;
-        
-        setNeeds() {
-            this.food = new Need("Food", this, (c:NeedComponent) => c.attributes.strength.getValue(), (c:NeedComponent) => 1-c.health.vigour.getValue());
-            
-            this.comfort = new Need("Comfort", this, (c:NeedComponent) => 1-c.health.vitality.getValue(), (c:NeedComponent) => 1-c.health.vigour.getValue());
-            
-            this.community = new Need("Community", this, (c:NeedComponent) => c.attributes.charisma.getValue(), (c:NeedComponent) => c.health.enthusiasm.getValue());
+        //Tertiary needs:
+        community:Need = new Need("Food");
+        success:Need = new Need("Food");
+        control:Need = new Need("Food");
                 
-            this.curiosity = new Need("Curiosity", this, (c:NeedComponent) => c.attributes.intelligence.getValue(), (c:NeedComponent) => c.health.enthusiasm.getValue());
-        }
-        
-        addNeed(name: string, ...args: string[]) {
-            var dependencies = args.map(
-                (value: string) => {
-                    var path = value.split('.');
-                    var componentName: string = path[0];
-                    var statName: string = path[1];
-                    var methodName: string = path[2];
-                    
-                    return (c: NeedComponent):number => {
-                        var component: StatComponent = c[componentName];
-                        var stat: Stat = component[statName];
-                        var method: (() => number) = stat[methodName];
-                        return method();
-                    };
-                }
-            );
-            
-            var need:Need = new (Need.bind.apply(null, [].concat([name, this]).concat(dependencies)));
-            this[name.toLowerCase()] = need;
-        }
-        
         asArray(): Array<Need> {
-            return [this.food, this.water, this.shelter];
+            var self = this;
+            
+            var list = []
+            for (var property in this) {
+                if (property instanceof Need){
+                    list.push(property);
+                } 
+            }
+            
+            return this.names.map((value:string) => {
+                var n:Need = self[value];
+                return n;
+            });
         }
         
-        toString():string[] {
-            return this.asArray().map((value: Need) => value.toString());
+        getNHighest(n:number): Array<Need> {
+            return this.asArray().sort((n) => n.getValue()).slice(0, n);
         }
     }
 }
