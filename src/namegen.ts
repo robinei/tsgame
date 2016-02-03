@@ -45,32 +45,78 @@ namespace Game {
         return capitalizeFirstLetter(name);
     }
     
-    class Name {        
-        private name: string = "";
+    export class Name {        
+        private syllables: Array<Syllable> = [];
+        private base: Array<Name>;
+        length: number;
         
-        constructor(){
+        constructor(...names: Name[]){
+            this.base = names;
+            
             //initialize name with a syllable
+            var threshold = 1;
+            var i = 0;
+            do { 
+                this.addSyllable(i++);
+                threshold -= Math.random() * Math.random(); 
+            } while (threshold > 0);
+            length = this.syllables.length;
         }
         
-        addSyllable():Name {
-            var syllable = new Syllable();
+        private addSyllable(i:number):Name {
+            var syllable = null;
             
-            switch (Math.floor(Math.random()*5)) {
-                case 0: syllable.addConsonant().addConsonant().addVowel()
-                case 1: syllable.addConsonant().addConsonant().addVowel().addConsonant()
-                case 2: syllable.addConsonant().addVowel()
-                case 3: syllable.addConsonant().addVowel().addConsonant()
-                case 4: syllable.addConsonant().addConsonant().addVowel()
+            if (Math.random() > 0.2 + 0.05 * this.base.length) {
+                syllable = this.pickSyllable(i);
+            }
+            else{
+                syllable = new Syllable();
             }
             
-            this.name += syllable;
+            this.syllables.push(syllable);
             return this;
         }
+        
+        private pickSyllable(i:number): Syllable {
+            var n = Math.floor(Math.random() * this.base.filter(n => n.length > i).length);
+            return n > 0 ? this.base[n].getSyllable(i) : new Syllable();
+        }
+        
+        private getSyllable(i:number) {
+            return this.syllables[i];
+        }
+        
+        toString(): string {
+            return this.syllables.join();
+        }
     }
+    
     class Syllable {
-        characters: string = "";
+        private characters: string = "";
         private vowels: string = "aeiouyæøå";
         private consonants: string = "bcdfghjklmnpqrstv" 
+        
+        constructor() {
+            switch (Math.floor(Math.random()*11)) {
+                case 0: this.addConsonant().addConsonant().addVowel();break;
+                case 1: this.addConsonant().addConsonant().addVowel().addConsonant(0.75);break;
+                case 2: this.addConsonant().addConsonant().addVowel().addConsonant(0.75).addConsonant(0.5);break;
+                
+                case 3: this.addConsonant().addVowel();break;
+                case 4: this.addConsonant().addVowel().addConsonant();break;
+                case 5: this.addConsonant().addVowel().addConsonant().addConsonant(0.75);break;
+                case 6: this.addConsonant().addVowel().addConsonant().addConsonant(0.75).addConsonant(0.5);break;
+                
+                case 7: this.addVowel();break;
+                case 8: this.addVowel().addConsonant();break;
+                case 9: this.addVowel().addConsonant().addConsonant(0.75);break;
+                case 10: this.addVowel().addConsonant().addConsonant(0.75).addConsonant(0.5);break;
+            }
+        }
+        
+        toString = function(): string {
+            return this.characters;
+        }
                 
         addVowel(chance: number = 1):Syllable {
             this.characters += Syllable.pickLetter(this.vowels, chance);
